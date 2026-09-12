@@ -10,6 +10,7 @@ import ComplaintDetailPage from './pages/ComplaintDetailPage';
 import PriorityQueuePage from './pages/PriorityQueuePage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import MapPage from './pages/MapPage';
+import ResearchPage from './pages/ResearchPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -48,6 +49,7 @@ function AppRoutes() {
         <Route path="/complaints/:id" element={<ComplaintDetailPage />} />
         <Route path="/admin/queue" element={<PriorityQueuePage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
+        <Route path="/research" element={<ResearchPage />} />
       </Route>
 
       {/* Redirects */}

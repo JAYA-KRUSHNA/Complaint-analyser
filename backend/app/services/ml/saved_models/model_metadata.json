@@ -18,6 +18,6 @@
     "TRAFFIC",
     "WATER_SUPPLY"
   ],
-  "tfidf_features": 2281,
+  "tfidf_features": 2296,
   "sample_count": 600
 }

@@ -128,5 +128,19 @@ export const mapApi = {
   getIncidents: () => api.get('/analytics/incidents'),
 };
 
+// ─── Research & ML API ───────────────────────────────────────
+export const researchApi = {
+  getBenchmarks: () => api.get('/ml/research-benchmarks'),
+
+  testPlayground: (data: { text: string; language?: string }) =>
+    api.post('/ml/playground', data),
+
+  trainModels: () => api.post('/ml/train'),
+
+  setActiveModel: (data: { model: string }) =>
+    api.post('/ml/set-active-model', data),
+};
+
 export default api;
+
 

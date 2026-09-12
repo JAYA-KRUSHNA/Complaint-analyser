@@ -198,17 +198,21 @@ class MLTrainingPipeline:
         return self.results
 
     def save_best_model(self) -> str:
-        """Save the best model and vectorizer to disk."""
+        """Save all models, best model, and vectorizer to disk."""
         if not self.best_model_name or not self.vectorizer:
             raise ValueError("Must call train_all() first")
 
-        model = self.models[self.best_model_name]
+        # Save all individual models so multi-model playground can serve them
+        for m_name, m_obj in self.models.items():
+            joblib.dump(m_obj, MODEL_DIR / f"{m_name}.joblib")
+
+        best_model = self.models[self.best_model_name]
         model_path = MODEL_DIR / "best_classifier.joblib"
         vectorizer_path = MODEL_DIR / "tfidf_vectorizer.joblib"
         metadata_path = MODEL_DIR / "model_metadata.json"
 
-        # Save model + vectorizer
-        joblib.dump(model, model_path)
+        # Save best model + vectorizer
+        joblib.dump(best_model, model_path)
         joblib.dump(self.vectorizer, vectorizer_path)
 
         # Save metadata
@@ -225,27 +229,36 @@ class MLTrainingPipeline:
         with open(metadata_path, "w") as f:
             json.dump(metadata, f, indent=2)
 
-        print(f"\n💾 Saved to {MODEL_DIR}/")
-        print(f"   Model:      {model_path.name}")
+        print(f"\n💾 Saved all models & vectorizer to {MODEL_DIR}/")
+        print(f"   Best Model: {model_path.name}")
         print(f"   Vectorizer: {vectorizer_path.name}")
         print(f"   Metadata:   {metadata_path.name}")
 
         return str(model_path)
 
     def save_comparison_report(self) -> str:
-        """Save full comparison report."""
+        """Save full comparison report with confusion matrix & per-class metrics."""
         report_path = MODEL_DIR / "comparison_report.json"
 
         report = {
             "best_model": self.best_model_name,
+            "classes": self.classes.tolist() if self.classes is not None else [],
             "models": {},
         }
         for name, result in self.results.items():
-            # Remove confusion matrix for cleaner JSON
-            clean = {k: v for k, v in result.items() if k != "confusion_matrix"}
-            # Clean classification report
+            clean = dict(result)
             if "classification_report" in clean:
                 cr = clean["classification_report"]
+                clean["per_class_metrics"] = {
+                    k: {
+                        "precision": round(v.get("precision", 0), 4),
+                        "recall": round(v.get("recall", 0), 4),
+                        "f1": round(v.get("f1-score", 0), 4),
+                        "support": v.get("support", 0),
+                    }
+                    for k, v in cr.items()
+                    if isinstance(v, dict) and "f1-score" in v
+                }
                 clean["per_class_f1"] = {
                     k: round(v["f1-score"], 4)
                     for k, v in cr.items()

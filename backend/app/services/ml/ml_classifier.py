@@ -8,8 +8,9 @@ Falls back to rule-based classifier if no trained model exists.
 """
 
 import json
+import time
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict, Any
 
 import joblib  # type: ignore
 import numpy as np  # type: ignore
@@ -124,3 +125,63 @@ class MLClassifier(TextClassificationService):
 
     def get_model_version(self) -> str:
         return self.model_version
+
+    def predict_all_models(self, text: str) -> Dict[str, Any]:
+        """
+        Run inference across all trained models (Logistic Regression, SVM, Random Forest)
+        and return their individual predictions, confidences, and latencies.
+        """
+        if not self.vectorizer:
+            vectorizer_path = MODEL_DIR / "tfidf_vectorizer.joblib"
+            if vectorizer_path.exists():
+                self.vectorizer = joblib.load(vectorizer_path)
+            else:
+                return {"error": "TF-IDF Vectorizer not found on disk"}
+
+        X = self.vectorizer.transform([text])
+        results: Dict[str, Any] = {}
+
+        model_files = [
+            ("logistic_regression", "Logistic Regression", MODEL_DIR / "logistic_regression.joblib"),
+            ("svm", "Support Vector Machine", MODEL_DIR / "svm.joblib"),
+            ("random_forest", "Random Forest", MODEL_DIR / "random_forest.joblib"),
+        ]
+
+        feature_names = self.vectorizer.get_feature_names_out()
+        nonzero_indices = X.nonzero()[1]
+        active_tokens = [str(feature_names[i]) for i in nonzero_indices]
+
+        for m_key, display_name, path in model_files:
+            if not path.exists():
+                continue
+            try:
+                t0 = time.perf_counter()
+                model = joblib.load(path)
+                pred = model.predict(X)[0]
+                conf = 0.85
+
+                if hasattr(model, "predict_proba"):
+                    proba = model.predict_proba(X)[0]
+                    conf = float(np.max(proba))
+                elif hasattr(model, "decision_function"):
+                    decision = model.decision_function(X)[0]
+                    exp_s = np.exp(decision - np.max(decision))
+                    proba = exp_s / exp_s.sum()
+                    conf = float(np.max(proba))
+
+                latency_ms = round((time.perf_counter() - t0) * 1000, 2)
+
+                results[m_key] = {
+                    "name": display_name,
+                    "category": str(pred),
+                    "confidence": round(conf, 3),
+                    "latency_ms": max(latency_ms, 0.1),
+                }
+            except Exception as ex:
+                results[m_key] = {"error": str(ex)}
+
+        return {
+            "models": results,
+            "active_tokens": active_tokens[:10],
+        }
+

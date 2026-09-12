@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, FileText, Plus, LogOut, Menu, X,
   Shield, ChevronDown, BarChart3, ListChecks, ChevronLeft,
-  Bell, Search, MapPin,
+  Bell, Search, MapPin, Cpu,
 } from 'lucide-react';
 
 export default function DashboardLayout() {
@@ -39,6 +39,7 @@ export default function DashboardLayout() {
       items: [
         { path: '/admin/queue', label: 'Priority Queue', icon: ListChecks },
         { path: '/analytics', label: 'Analytics', icon: BarChart3 },
+        { path: '/research', label: 'AI Research Lab', icon: Cpu },
       ],
     }] : []),
   ];
