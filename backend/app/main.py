@@ -10,13 +10,17 @@ Sets up the FastAPI application with:
 This is the single entry point: `uvicorn app.main:app`
 """
 
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request  # type: ignore
 from fastapi.middleware.cors import CORSMiddleware  # type: ignore
+from fastapi.middleware.gzip import GZipMiddleware  # type: ignore
 from fastapi.responses import JSONResponse  # type: ignore
+from sqlalchemy import text  # type: ignore
 
 from app.config import settings  # type: ignore
+from app.database import engine  # type: ignore
 from app.core.exceptions import (  # type: ignore
     CiviSenseException,
     DuplicateException,
@@ -63,7 +67,7 @@ app = FastAPI(
 )
 
 
-# ─── CORS Middleware ──────────────────────────────────────────
+# ─── Middleware ───────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
@@ -71,6 +75,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
 # ─── Exception Handlers ──────────────────────────────────────
@@ -131,14 +136,29 @@ app.include_router(v1_router)
     "/api/health",
     tags=["Health"],
     summary="Health Check",
-    description="Returns the health status of the CiviSense API.",
+    description="Returns the health status of the CiviSense API and database connection.",
 )
 async def health_check():
+    db_status = "unknown"
+    db_latency_ms = None
+    start_time = time.time()
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        db_latency_ms = round((time.time() - start_time) * 1000, 2)
+        db_status = "healthy"
+    except Exception as e:
+        db_status = f"unhealthy: {str(e)}"
+
     return {
-        "status": "ok",
+        "status": "healthy" if db_status == "healthy" else "degraded",
         "app": settings.APP_NAME,
         "version": settings.APP_VERSION,
         "environment": settings.ENVIRONMENT,
+        "database": {
+            "status": db_status,
+            "latency_ms": db_latency_ms,
+        },
     }
 
 

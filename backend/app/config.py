@@ -43,6 +43,41 @@ class Settings(BaseSettings):
     )
     DB_ECHO: bool = False  # Set True to log all SQL queries
 
+    @property
+    def async_database_url(self) -> str:
+        """
+        Normalize DATABASE_URL for SQLAlchemy asyncpg engine.
+        Converts 'postgres://' or 'postgresql://' to 'postgresql+asyncpg://'
+        and strips query parameters like 'sslmode' that asyncpg handles via connect_args.
+        """
+        url = self.DATABASE_URL.strip()
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif url.startswith("postgresql://") and not url.startswith("postgresql+asyncpg://"):
+            url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+        # Remove sslmode param from query string if present (asyncpg uses connect_args={"ssl": True})
+        if "?sslmode=" in url:
+            url = url.split("?sslmode=")[0]
+        elif "&sslmode=" in url:
+            url = url.replace("&sslmode=require", "").replace("&sslmode=prefer", "")
+        return url
+
+    @property
+    def is_cloud_db(self) -> bool:
+        """Detect if database URL points to a cloud database (Neon, Supabase, Render, etc.)."""
+        db_url = self.DATABASE_URL.lower()
+        return any(
+            cloud in db_url
+            for cloud in [
+                "neon.tech",
+                "supabase.co",
+                "render.com",
+                "railway.app",
+                "amazonaws.com",
+            ]
+        ) or "sslmode=require" in db_url or "ssl=require" in db_url
+
     # ─── Security ──────────────────────────────────────────────
     SECRET_KEY: str = "dev-secret-key-change-in-production-minimum-32-chars"
     ALGORITHM: str = "HS256"

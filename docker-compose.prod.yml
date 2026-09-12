@@ -1,0 +1,74 @@
+services:
+  # ─────────────────────────────────────────────
+  # PostgreSQL 15 — Production Database (Local / Fallback)
+  # (Can be substituted with Neon by setting DATABASE_URL in .env)
+  # ─────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: civisense_db_prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-civisense}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-civisense_prod_secret_2024}
+      POSTGRES_DB: ${POSTGRES_DB:-civisense_db}
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-civisense} -d ${POSTGRES_DB:-civisense_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - civisense_net
+
+  # ─────────────────────────────────────────────
+  # FastAPI Production Backend (Multi-Worker)
+  # ─────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: civisense_backend_prod
+    restart: always
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://civisense:civisense_prod_secret_2024@db:5432/civisense_db}
+      - DATABASE_URL_SYNC=${DATABASE_URL_SYNC:-postgresql://civisense:civisense_prod_secret_2024@db:5432/civisense_db}
+      - SECRET_KEY=${SECRET_KEY:-production-secret-key-change-this-minimum-32-chars}
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost,http://127.0.0.1}
+      - STORAGE_BACKEND=local
+      - UPLOAD_DIR=/app/uploads
+    volumes:
+      - uploads_prod:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - civisense_net
+
+  # ─────────────────────────────────────────────
+  # Nginx Production Frontend + Reverse Proxy
+  # ─────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: civisense_frontend_prod
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - civisense_net
+
+networks:
+  civisense_net:
+    driver: bridge
+
+volumes:
+  pgdata_prod:
+    driver: local
+  uploads_prod:
+    driver: local

@@ -18,15 +18,20 @@ from app.config import settings  # type: ignore
 
 
 # ─── Async Engine ──────────────────────────────────────────────
-# Connection pooling configured for both local dev and Neon free tier.
-# Neon free tier limits: 20 connections. We keep pool small to stay safe.
+# Connection pooling configured for both local dev and Neon serverless free tier.
+# Neon free tier limits: 20 connections. We keep pool small and resilient to auto-suspend.
+connect_args = {}
+if settings.is_cloud_db:
+    connect_args["ssl"] = True
+
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    settings.async_database_url,
     echo=settings.DB_ECHO,
-    pool_size=5,             # Base pool connections
+    pool_size=5,             # Base pool connections (safe for Neon 20-conn limit)
     max_overflow=10,         # Extra connections under load
     pool_pre_ping=True,      # Verify connections before use (handles Neon auto-suspend)
-    pool_recycle=300,         # Recycle connections every 5 min (handles Neon timeouts)
+    pool_recycle=300,        # Recycle connections every 5 min (handles Neon timeouts)
+    connect_args=connect_args,
 )
 
 # ─── Session Factory ──────────────────────────────────────────
