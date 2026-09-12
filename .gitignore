@@ -1,0 +1,53 @@
+# ─── Python ───
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ─── Virtual Environment ───
+venv/
+env/
+.venv/
+
+# ─── ML Models (large files) ───
+backend/app/services/ml/saved_models/*.joblib
+
+# ─── Environment ───
+.env
+.env.local
+.env.production
+
+# ─── IDE ───
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── Node ───
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Build ───
+frontend/dist/
+frontend/.vite/
+
+# ─── OS ───
+.DS_Store
+Thumbs.db
+
+# ─── Alembic ───
+*.db
+
+# ─── Antigravity IDE ───
+.gemini/
+
+# ─── Misc ───
+*.log
+.agents/

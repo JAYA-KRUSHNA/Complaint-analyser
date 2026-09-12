@@ -1,0 +1,11 @@
+{
+  "pythonPath": "/Users/jayakrushna/Desktop/final project/civisense/venv/bin/python",
+  "venvPath": "/Users/jayakrushna/Desktop/final project/civisense",
+  "venv": "venv",
+  "pythonVersion": "3.12",
+  "extraPaths": [
+    "/Users/jayakrushna/Desktop/final project/civisense/backend",
+    "/Users/jayakrushna/Desktop/final project/civisense/venv/lib/python3.12/site-packages"
+  ],
+  "typeCheckingMode": "off"
+}

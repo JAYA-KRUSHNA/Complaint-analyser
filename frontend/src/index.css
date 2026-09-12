@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base ────────────────────────────────────────────────── */
+@layer base {
+  body {
+    @apply bg-civic-50 text-civic-800 font-sans antialiased;
+    min-height: 100vh;
+  }
+}
+
+/* ─── Glass Morphism ──────────────────────────────────────── */
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(226, 232, 240, 0.45);
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 20px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.02);
+    border-color: rgba(99, 102, 241, 0.12);
+  }
+
+  .glass-dark {
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: white;
+  }
+
+  .glass-accent {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(139, 92, 246, 0.04));
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 0.875rem;
+  }
+
+  /* ─── Status Badges ──────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide;
+  }
+
+  .badge-submitted { @apply badge bg-blue-50 text-blue-600 ring-1 ring-blue-200/60; }
+  .badge-under-review { @apply badge bg-amber-50 text-amber-600 ring-1 ring-amber-200/60; }
+  .badge-assigned { @apply badge bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200/60; }
+  .badge-in-progress { @apply badge bg-orange-50 text-orange-600 ring-1 ring-orange-200/60; }
+  .badge-escalated { @apply badge bg-red-50 text-red-600 ring-1 ring-red-200/60; }
+  .badge-resolved { @apply badge bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60; }
+  .badge-rejected { @apply badge bg-gray-100 text-gray-500 ring-1 ring-gray-200/60; }
+  .badge-closed { @apply badge bg-slate-100 text-slate-500 ring-1 ring-slate-200/60; }
+
+  /* ─── Priority Badges ────────────────────────────────────── */
+  .priority-p1,
+  .priority-critical { @apply badge bg-red-500 text-white ring-1 ring-red-600; }
+  .priority-p2,
+  .priority-high { @apply badge bg-orange-500 text-white ring-1 ring-orange-600; }
+  .priority-p3,
+  .priority-medium { @apply badge bg-amber-400 text-amber-900 ring-1 ring-amber-500; }
+  .priority-p4,
+  .priority-low { @apply badge bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200; }
+
+  /* ─── Buttons ─────────────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm 
+           transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed select-none;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700 
+           focus:ring-primary-500 shadow-sm hover:shadow-md active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-civic-700 border border-civic-200 hover:bg-civic-50 
+           focus:ring-civic-400 shadow-sm;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm;
+  }
+
+  .btn-ghost {
+    @apply btn text-civic-600 hover:bg-civic-100 focus:ring-civic-300;
+  }
+
+  .btn-sm { @apply px-3 py-1.5 text-xs rounded-lg; }
+  .btn-lg { @apply px-8 py-3.5 text-base rounded-xl; }
+
+  /* ─── Form Inputs ─────────────────────────────────────────── */
+  .input {
+    @apply w-full px-4 py-2.5 bg-white border border-civic-200 rounded-xl text-civic-800
+           placeholder:text-civic-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20
+           transition-all duration-200;
+  }
+
+  .input-error { @apply border-red-300 focus:border-red-500 focus:ring-red-500/20; }
+  .label { @apply block text-sm font-medium text-civic-700 mb-1.5; }
+
+  /* ─── Cards ───────────────────────────────────────────────── */
+  .card {
+    @apply bg-white rounded-xl border border-civic-200/60 shadow-sm transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-md hover:border-primary-200/40 hover:-translate-y-0.5 cursor-pointer;
+  }
+
+  /* ─── Stat Cards ──────────────────────────────────────────── */
+  .stat-card { @apply glass-card p-6 flex flex-col gap-2; }
+  .stat-value { @apply text-3xl font-bold text-civic-800; }
+  .stat-label { @apply text-sm text-civic-500 font-medium; }
+
+  /* ─── Page Layout ─────────────────────────────────────────── */
+  .page-container { @apply px-6 lg:px-8 py-6; }
+  .page-title { @apply text-xl font-bold text-civic-900 tracking-tight; }
+  .page-subtitle { @apply text-sm text-civic-500 mt-0.5; }
+}
+
+/* ─── Staggered children animation ───────────────────────────── */
+.stagger > * { animation: fadeIn 0.4s ease-out both; }
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 50ms; }
+.stagger > *:nth-child(3) { animation-delay: 100ms; }
+.stagger > *:nth-child(4) { animation-delay: 150ms; }
+.stagger > *:nth-child(5) { animation-delay: 200ms; }
+.stagger > *:nth-child(6) { animation-delay: 250ms; }
+.stagger > *:nth-child(7) { animation-delay: 300ms; }
+.stagger > *:nth-child(8) { animation-delay: 350ms; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { @apply bg-civic-300/50 rounded-full hover:bg-civic-400/60; }
+
+/* ─── Selection ──────────────────────────────────────────────── */
+::selection { @apply bg-primary-100 text-primary-900; }
