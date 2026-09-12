@@ -10,15 +10,15 @@ Dependency injection functions for:
 import uuid
 from typing import List
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends, HTTPException, status  # type: ignore
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer  # type: ignore
+from sqlalchemy import select  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 
-from app.database import get_db
-from app.core.security import get_token_data
-from app.core.constants import UserRole
-from app.models.user import User
+from app.database import get_db  # type: ignore
+from app.core.security import get_token_data  # type: ignore
+from app.core.constants import UserRole  # type: ignore
+from app.models.user import User  # type: ignore
 
 # ─── Bearer Token Extraction ──────────────────────────────────
 security_scheme = HTTPBearer(auto_error=False)
@@ -30,7 +30,7 @@ async def get_current_user(
 ) -> User:
     """
     Extract and validate the current user from the JWT token.
-    
+
     This is the core authentication dependency.
     Raises 401 if token is missing, invalid, or user not found.
     """
@@ -93,7 +93,7 @@ async def get_current_active_user(
 def require_roles(*allowed_roles: UserRole):
     """
     Dependency factory that restricts access to specific roles.
-    
+
     Usage:
         @router.get("/admin-only")
         async def admin_endpoint(

@@ -11,10 +11,10 @@ import json
 from pathlib import Path
 from typing import Optional
 
-import joblib
-import numpy as np
+import joblib  # type: ignore
+import numpy as np  # type: ignore
 
-from app.services.interfaces.text_classification import (
+from app.services.interfaces.text_classification import (  # type: ignore
     ClassificationResult,
     TextClassificationService,
 )
@@ -25,7 +25,7 @@ MODEL_DIR = Path(__file__).parent / "saved_models"
 class MLClassifier(TextClassificationService):
     """
     ML-based text classifier using TF-IDF + trained sklearn model.
-    
+
     Loads the best model saved by the training pipeline.
     If prediction confidence is below a threshold, includes
     top-N alternatives for transparency.

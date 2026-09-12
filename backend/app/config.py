@@ -6,13 +6,13 @@ Uses pydantic-settings for type-safe configuration management.
 """
 
 from typing import List
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict  # type: ignore
 
 
 class Settings(BaseSettings):
     """
     Application-wide settings loaded from environment variables.
-    
+
     All settings have sensible defaults for local development.
     Production values are set via environment variables or .env file.
     """

@@ -8,25 +8,25 @@ Separated from the API layer for clean architecture and testability.
 import uuid
 from typing import Optional
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 
-from app.core.constants import UserRole
-from app.core.exceptions import (
+from app.core.constants import UserRole  # type: ignore
+from app.core.exceptions import (  # type: ignore
     DuplicateException,
     NotFoundException,
     UnauthorizedException,
     ValidationException,
 )
-from app.core.security import (
+from app.core.security import (  # type: ignore
     create_access_token,
     create_refresh_token,
     get_token_data,
     hash_password,
     verify_password,
 )
-from app.models.user import User
-from app.schemas.auth import (
+from app.models.user import User  # type: ignore
+from app.schemas.auth import (  # type: ignore
     AdminCreateUserRequest,
     ChangePasswordRequest,
     LoginRequest,
@@ -46,7 +46,7 @@ class AuthService:
     async def register_citizen(self, data: RegisterRequest) -> User:
         """
         Register a new citizen account.
-        
+
         Citizens self-register. Officers/admins are created by admins.
         """
         # Check for duplicate email
@@ -106,7 +106,7 @@ class AuthService:
     async def login(self, data: LoginRequest) -> dict:
         """
         Authenticate user and return JWT token pair.
-        
+
         Returns:
             Dict with access_token, refresh_token, and user data.
         """

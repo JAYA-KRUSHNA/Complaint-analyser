@@ -17,8 +17,8 @@ Output: Score 0-10, mapped to LOW/MEDIUM/HIGH/CRITICAL levels.
 import re
 from typing import Dict, List, Optional, Tuple
 
-from app.core.constants import SeverityLevel
-from app.services.interfaces.severity_assessment import (
+from app.core.constants import SeverityLevel  # type: ignore
+from app.services.interfaces.severity_assessment import (  # type: ignore
     SeverityAssessmentService,
     SeverityResult,
 )
@@ -91,7 +91,7 @@ CATEGORY_SEVERITY_BASELINE: Dict[str, float] = {
 class RuleBasedSeverity(SeverityAssessmentService):
     """
     Rule-based severity assessment using multi-factor scoring.
-    
+
     Algorithm:
     1. Start with category baseline score.
     2. Match keywords in severity tiers — take highest matching tier.

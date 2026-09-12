@@ -7,5 +7,17 @@
     "/Users/jayakrushna/Desktop/final project/civisense/backend",
     "/Users/jayakrushna/Desktop/final project/civisense/venv/lib/python3.12/site-packages"
   ],
-  "typeCheckingMode": "off"
+  "typeCheckingMode": "off",
+  "reportMissingImports": false,
+  "reportMissingModuleSource": false,
+  "reportGeneralTypeIssues": false,
+  "reportOptionalMemberAccess": false,
+  "reportUnusedImport": false,
+  "reportAttributeAccessIssue": false,
+  "reportCallIssue": false,
+  "reportIndexIssue": false,
+  "reportOperatorIssue": false,
+  "reportReturnType": false,
+  "reportArgumentType": false,
+  "reportAssignmentType": false
 }

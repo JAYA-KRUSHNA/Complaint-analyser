@@ -7,14 +7,14 @@ Designed to work with both local Docker PostgreSQL and cloud Neon PostgreSQL.
 
 from collections.abc import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import (
+from sqlalchemy.ext.asyncio import (  # type: ignore
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase  # type: ignore
 
-from app.config import settings
+from app.config import settings  # type: ignore
 
 
 # ─── Async Engine ──────────────────────────────────────────────
@@ -41,7 +41,7 @@ async_session_factory = async_sessionmaker(
 class Base(DeclarativeBase):
     """
     Base class for all SQLAlchemy ORM models.
-    
+
     All models inherit from this to share:
     - Common metadata
     - Migration support via Alembic
@@ -53,12 +53,12 @@ class Base(DeclarativeBase):
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
     FastAPI dependency that provides a database session.
-    
+
     Usage in route handlers:
         @router.get("/items")
         async def get_items(db: AsyncSession = Depends(get_db)):
             ...
-    
+
     The session is automatically closed after the request completes.
     """
     async with async_session_factory() as session:

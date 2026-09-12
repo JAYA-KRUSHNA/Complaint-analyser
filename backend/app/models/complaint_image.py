@@ -11,12 +11,12 @@ Future: YOLO/CNN will populate detected_objects and image_severity_score.
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Float, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import UUID, JSONB
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import DateTime, Float, ForeignKey, String, Text  # type: ignore
+from sqlalchemy.dialects.postgresql import UUID, JSONB  # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 
-from app.database import Base
-from app.core.constants import ImageAnalysisStatus
+from app.database import Base  # type: ignore
+from app.core.constants import ImageAnalysisStatus  # type: ignore
 
 
 class ComplaintImage(Base):

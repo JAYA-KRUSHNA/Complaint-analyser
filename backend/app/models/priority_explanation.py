@@ -6,18 +6,18 @@ This is the core of the Explainable AI (XAI) requirement (Section 18).
 
 Example records for a P1 complaint:
   Safety Risk     | +25 | High safety risk: fire detected near residential area
-  Essential Svc   | +20 | Electricity is an essential service  
+  Essential Svc   | +20 | Electricity is an essential service
   Incident Size   | +18 | 3 related complaints in the same area
 """
 
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Float, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import DateTime, Float, ForeignKey, String, Text  # type: ignore
+from sqlalchemy.dialects.postgresql import UUID  # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 
-from app.database import Base
+from app.database import Base  # type: ignore
 
 
 class PriorityExplanation(Base):

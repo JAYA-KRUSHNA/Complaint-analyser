@@ -13,19 +13,19 @@ Endpoints:
 import uuid
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy import desc, func, select, case
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from fastapi import APIRouter, Depends, Query  # type: ignore
+from sqlalchemy import desc, func, select, case  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
+from sqlalchemy.orm import selectinload  # type: ignore
 
-from app.database import get_db
-from app.dependencies import get_current_active_user, require_officer
-from app.models.user import User
-from app.models.complaint import Complaint
-from app.models.category import Category
-from app.models.department import Department
-from app.models.complaint_status_history import ComplaintStatusHistory
-from app.core.constants import ComplaintStatus
+from app.database import get_db  # type: ignore
+from app.dependencies import get_current_active_user, require_officer  # type: ignore
+from app.models.user import User  # type: ignore
+from app.models.complaint import Complaint  # type: ignore
+from app.models.category import Category  # type: ignore
+from app.models.department import Department  # type: ignore
+from app.models.complaint_status_history import ComplaintStatusHistory  # type: ignore
+from app.core.constants import ComplaintStatus  # type: ignore
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
@@ -39,7 +39,7 @@ async def get_stats(
 ):
     """
     Get dashboard overview statistics.
-    
+
     Citizens see their own stats.
     Officers see their department stats.
     Admins see system-wide stats.
@@ -121,7 +121,7 @@ async def get_priority_queue(
 ):
     """
     Get complaints sorted by priority score (highest first).
-    
+
     This is the main admin/officer work queue.
     Only accessible to officers, admins, and super admins.
     """

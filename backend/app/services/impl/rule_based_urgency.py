@@ -7,7 +7,7 @@ Evaluates how quickly a complaint needs attention.
 Key distinction from severity:
   - Severity = how BAD is the damage/harm
   - Urgency = how FAST does it need attention
-  
+
 Example: A small pothole (low severity) near a school zone during
 peak hours is HIGH urgency due to time-sensitivity.
 
@@ -21,8 +21,8 @@ Factors:
 
 from typing import Optional
 
-from app.core.constants import UrgencyLevel
-from app.services.interfaces.urgency_assessment import (
+from app.core.constants import UrgencyLevel  # type: ignore
+from app.services.interfaces.urgency_assessment import (  # type: ignore
     UrgencyAssessmentService,
     UrgencyResult,
 )
@@ -89,7 +89,7 @@ class RuleBasedUrgency(UrgencyAssessmentService):
     """
     Rule-based urgency assessment using keyword matching,
     duration analysis, and severity cross-reference.
-    
+
     Algorithm:
     1. Start with category baseline urgency.
     2. Check keyword tiers — upgrade if keywords indicate higher urgency.

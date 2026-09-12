@@ -12,12 +12,12 @@ This is the single entry point: `uvicorn app.main:app`
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request  # type: ignore
+from fastapi.middleware.cors import CORSMiddleware  # type: ignore
+from fastapi.responses import JSONResponse  # type: ignore
 
-from app.config import settings
-from app.core.exceptions import (
+from app.config import settings  # type: ignore
+from app.core.exceptions import (  # type: ignore
     CiviSenseException,
     DuplicateException,
     ForbiddenException,
@@ -30,7 +30,7 @@ from app.core.exceptions import (
 import app.models  # noqa: F401
 
 # Import API routers
-from app.api.v1.router import v1_router
+from app.api.v1.router import v1_router  # type: ignore
 
 
 # ─── Application Lifespan ─────────────────────────────────────
@@ -38,7 +38,7 @@ from app.api.v1.router import v1_router
 async def lifespan(app: FastAPI):
     """
     Application startup and shutdown events.
-    
+
     Startup: Log configuration, verify database connection.
     Shutdown: Clean up resources.
     """

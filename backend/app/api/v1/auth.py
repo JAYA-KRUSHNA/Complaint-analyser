@@ -11,13 +11,13 @@ Endpoints:
   POST /api/v1/auth/create-user   — Admin creates user (officer/admin)
 """
 
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, status  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 
-from app.database import get_db
-from app.dependencies import get_current_active_user, require_admin
-from app.models.user import User
-from app.schemas.auth import (
+from app.database import get_db  # type: ignore
+from app.dependencies import get_current_active_user, require_admin  # type: ignore
+from app.models.user import User  # type: ignore
+from app.schemas.auth import (  # type: ignore
     AdminCreateUserRequest,
     ChangePasswordRequest,
     LoginRequest,
@@ -27,7 +27,7 @@ from app.schemas.auth import (
     UserResponse,
     UserUpdateRequest,
 )
-from app.services.auth_service import AuthService
+from app.services.auth_service import AuthService  # type: ignore
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -46,7 +46,7 @@ async def register(
 ):
     """
     Register a new citizen account.
-    
+
     Citizens self-register through this endpoint.
     Officers and admins are created via the /create-user endpoint.
     """
@@ -68,7 +68,7 @@ async def login(
 ):
     """
     Authenticate with email and password.
-    
+
     Returns:
         access_token: Short-lived token (30 min) for API access.
         refresh_token: Long-lived token (7 days) for obtaining new access tokens.
@@ -165,7 +165,7 @@ async def admin_create_user(
 ):
     """
     Admin creates a new user (department officer, admin, or citizen).
-    
+
     Requires ADMIN or SUPER_ADMIN role.
     Department officers must have a department_id assigned.
     """

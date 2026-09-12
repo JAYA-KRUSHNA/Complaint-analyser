@@ -11,14 +11,14 @@ import sys
 from pathlib import Path
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, pool
-from alembic import context
+from sqlalchemy import engine_from_config, pool  # type: ignore
+from alembic import context  # type: ignore
 
 # Add the backend directory to sys.path so we can import app modules
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.config import settings
-from app.database import Base
+from app.config import settings  # type: ignore
+from app.database import Base  # type: ignore
 
 # Import all models — required for autogenerate to detect them
 import app.models  # noqa: F401
@@ -40,7 +40,7 @@ target_metadata = Base.metadata
 def run_migrations_offline() -> None:
     """
     Run migrations in 'offline' mode.
-    
+
     Generates SQL scripts without connecting to the database.
     Useful for reviewing migration SQL before applying.
     """
@@ -59,7 +59,7 @@ def run_migrations_offline() -> None:
 def run_migrations_online() -> None:
     """
     Run migrations in 'online' mode.
-    
+
     Connects to the database and applies migrations directly.
     """
     connectable = engine_from_config(

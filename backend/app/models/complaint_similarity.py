@@ -8,11 +8,11 @@ Both directions are stored (A→B and B→A) for fast lookup.
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Index
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Index  # type: ignore
+from sqlalchemy.dialects.postgresql import UUID  # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 
-from app.database import Base
+from app.database import Base  # type: ignore
 
 
 class ComplaintSimilarity(Base):

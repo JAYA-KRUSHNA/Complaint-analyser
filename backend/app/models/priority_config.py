@@ -11,11 +11,11 @@ Section 9 of the prompt: "Make the weights configurable by administrators."
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String
-from sqlalchemy.dialects.postgresql import UUID, JSONB
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Boolean, DateTime, ForeignKey, String  # type: ignore
+from sqlalchemy.dialects.postgresql import UUID, JSONB  # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column  # type: ignore
 
-from app.database import Base
+from app.database import Base  # type: ignore
 
 
 class PriorityConfig(Base):
@@ -27,7 +27,7 @@ class PriorityConfig(Base):
 
     # ─── Configuration ─────────────────────────────────────
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    
+
     # JSONB: the weight configuration
     # Example: {"severity": 0.25, "urgency": 0.20, "safety_risk": 0.15, ...}
     weights: Mapped[dict] = mapped_column(JSONB, nullable=False)

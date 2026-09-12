@@ -20,8 +20,8 @@ This serves as:
 import re
 from typing import Dict, List, Optional, Tuple
 
-from app.core.constants import ComplaintCategory
-from app.services.interfaces.text_classification import (
+from app.core.constants import ComplaintCategory  # type: ignore
+from app.services.interfaces.text_classification import (  # type: ignore
     ClassificationResult,
     TextClassificationService,
 )
@@ -271,7 +271,7 @@ VULNERABLE_KEYWORDS = [
 class RuleBasedClassifier(TextClassificationService):
     """
     Rule-based text classifier using weighted keyword matching.
-    
+
     Algorithm:
     1. Normalize input text (lowercase, basic cleaning).
     2. For each category, compute a score by matching keywords.

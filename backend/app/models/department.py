@@ -7,11 +7,11 @@ Government departments responsible for handling different complaint categories.
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text  # type: ignore
+from sqlalchemy.dialects.postgresql import UUID  # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 
-from app.database import Base
+from app.database import Base  # type: ignore
 
 
 class Department(Base):
@@ -47,7 +47,7 @@ class Department(Base):
 class CategoryDepartmentMapping(Base):
     """
     Maps categories to their responsible departments.
-    
+
     Separated into its own table so the routing engine is independent
     of the classifier, as required by the prompt (Section 12).
     Admins can reconfigure routing without touching classification logic.

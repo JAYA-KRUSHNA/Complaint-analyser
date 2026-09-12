@@ -16,18 +16,18 @@ import asyncio
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 
-from app.database import async_session_factory, engine, Base
-from app.models import (
+from app.database import async_session_factory, engine, Base  # type: ignore
+from app.models import (  # type: ignore
     User,
     Category,
     Department,
     CategoryDepartmentMapping,
     PriorityConfig,
 )
-from app.core.constants import (
+from app.core.constants import (  # type: ignore
     ComplaintCategory,
     UserRole,
     DEFAULT_PRIORITY_WEIGHTS,

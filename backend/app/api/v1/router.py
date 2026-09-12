@@ -5,7 +5,7 @@ Aggregates all v1 route modules into a single router
 that gets mounted on the FastAPI app at /api/v1.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter  # type: ignore
 
 from app.api.v1.auth import router as auth_router  # type: ignore
 from app.api.v1.complaints import router as complaints_router  # type: ignore

@@ -28,8 +28,8 @@ Score → Level mapping:
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
-from app.core.constants import DEFAULT_PRIORITY_WEIGHTS, get_priority_level
-from app.services.interfaces.explanation_service import (
+from app.core.constants import DEFAULT_PRIORITY_WEIGHTS, get_priority_level  # type: ignore
+from app.services.interfaces.explanation_service import (  # type: ignore
     ExplanationFactor,
     ExplanationResult,
     ExplanationService,
@@ -53,7 +53,7 @@ class PriorityInput:
 class PriorityEngine:
     """
     Computes the Civic Impact Score (0-100) from multi-factor inputs.
-    
+
     Each factor is normalized to a 0-100 sub-score, then combined
     with configurable weights. The engine also produces a detailed
     factor breakdown for explainability (XAI).
@@ -62,7 +62,7 @@ class PriorityEngine:
     def __init__(self, weights: Optional[Dict[str, float]] = None):
         """
         Initialize with custom weights or use defaults.
-        
+
         Args:
             weights: Optional custom weights (from PriorityConfig table).
                      Falls back to DEFAULT_PRIORITY_WEIGHTS if None.
@@ -72,7 +72,7 @@ class PriorityEngine:
     def compute(self, inputs: PriorityInput) -> ExplanationResult:
         """
         Compute the Civic Impact Score and generate explanation.
-        
+
         Returns:
             ExplanationResult with score, level, and factor breakdown.
         """
@@ -206,7 +206,7 @@ class PriorityEngine:
 class RuleBasedExplanation(ExplanationService):
     """
     Phase 1 explanation generator.
-    
+
     Since the rule-based engine already produces factor breakdowns,
     this service simply formats and structures them.
     """

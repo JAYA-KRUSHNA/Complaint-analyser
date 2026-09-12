@@ -8,15 +8,15 @@ Endpoints:
 
 import uuid
 
-from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, status  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 
-from app.database import get_db
-from app.dependencies import get_current_active_user, require_officer
-from app.models.user import User
-from app.schemas.complaint import ComplaintDetailResponse
-from app.services.impl.analysis_pipeline import AnalysisPipeline
-from app.services.complaint_service import ComplaintService
+from app.database import get_db  # type: ignore
+from app.dependencies import get_current_active_user, require_officer  # type: ignore
+from app.models.user import User  # type: ignore
+from app.schemas.complaint import ComplaintDetailResponse  # type: ignore
+from app.services.impl.analysis_pipeline import AnalysisPipeline  # type: ignore
+from app.services.complaint_service import ComplaintService  # type: ignore
 
 router = APIRouter(prefix="/analysis", tags=["AI Analysis"])
 
@@ -35,7 +35,7 @@ async def analyze_complaint(
 ):
     """
     Run the full AI analysis pipeline on a complaint.
-    
+
     This will:
     - Classify the complaint into a category
     - Route to the appropriate department
@@ -43,7 +43,7 @@ async def analyze_complaint(
     - Compute the Civic Impact Score (priority)
     - Generate priority explanations (XAI)
     - Estimate resolution time
-    
+
     Can be run multiple times (re-analysis) — previous results
     are overwritten and a new prediction audit is created.
     """
@@ -72,7 +72,7 @@ async def get_explanation(
 ):
     """
     Get the XAI explanation for a complaint's priority score.
-    
+
     Returns the factor breakdown showing how each factor
     contributed to the final Civic Impact Score.
     """

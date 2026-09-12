@@ -14,13 +14,13 @@ Endpoints:
 import uuid
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, Query, status  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 
-from app.database import get_db
-from app.dependencies import get_current_active_user, require_officer
-from app.models.user import User
-from app.schemas.complaint import (
+from app.database import get_db  # type: ignore
+from app.dependencies import get_current_active_user, require_officer  # type: ignore
+from app.models.user import User  # type: ignore
+from app.schemas.complaint import (  # type: ignore
     ComplaintCreateRequest,
     ComplaintDetailResponse,
     ComplaintListResponse,
@@ -29,7 +29,7 @@ from app.schemas.complaint import (
     StatusHistoryResponse,
     StatusUpdateRequest,
 )
-from app.services.complaint_service import ComplaintService
+from app.services.complaint_service import ComplaintService  # type: ignore
 
 router = APIRouter(prefix="/complaints", tags=["Complaints"])
 

@@ -8,10 +8,10 @@ Stateless authentication designed for both local dev and cloud deployment.
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+from jose import JWTError, jwt  # type: ignore
+from passlib.context import CryptContext  # type: ignore
 
-from app.config import settings
+from app.config import settings  # type: ignore
 
 # ─── Password Hashing ─────────────────────────────────────────
 # bcrypt with salt rounds = 12 (secure default)
@@ -36,11 +36,11 @@ def create_access_token(
 ) -> str:
     """
     Create a JWT access token.
-    
+
     Args:
         data: Payload to encode (must include "sub" for user ID).
         expires_delta: Custom expiration time. Defaults to settings value.
-    
+
     Returns:
         Encoded JWT string.
     """
@@ -61,7 +61,7 @@ def create_refresh_token(
 ) -> str:
     """
     Create a JWT refresh token (longer-lived).
-    
+
     Used to obtain new access tokens without re-authentication.
     """
     to_encode = data.copy()
@@ -78,7 +78,7 @@ def create_refresh_token(
 def decode_token(token: str) -> Optional[dict]:
     """
     Decode and verify a JWT token.
-    
+
     Returns:
         Decoded payload dict, or None if invalid/expired.
     """
@@ -94,11 +94,11 @@ def decode_token(token: str) -> Optional[dict]:
 def get_token_data(token: str, token_type: str = "access") -> Optional[dict]:
     """
     Decode a token and verify its type.
-    
+
     Args:
         token: JWT string.
         token_type: Expected token type ("access" or "refresh").
-    
+
     Returns:
         Decoded payload if valid and correct type, else None.
     """

@@ -13,21 +13,21 @@ from datetime import datetime, timezone
 from math import ceil
 from typing import Optional
 
-from sqlalchemy import func, select, desc
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy import func, select, desc  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
+from sqlalchemy.orm import selectinload  # type: ignore
 
-from app.core.constants import ComplaintStatus, UserRole
-from app.core.exceptions import (
+from app.core.constants import ComplaintStatus, UserRole  # type: ignore
+from app.core.exceptions import (  # type: ignore
     ForbiddenException,
     NotFoundException,
     ValidationException,
 )
-from app.models.complaint import Complaint
-from app.models.complaint_status_history import ComplaintStatusHistory
-from app.models.category import Category
-from app.models.department import Department
-from app.schemas.complaint import (
+from app.models.complaint import Complaint  # type: ignore
+from app.models.complaint_status_history import ComplaintStatusHistory  # type: ignore
+from app.models.category import Category  # type: ignore
+from app.models.department import Department  # type: ignore
+from app.schemas.complaint import (  # type: ignore
     ComplaintCreateRequest,
     ComplaintUpdateRequest,
     StatusUpdateRequest,
@@ -47,7 +47,7 @@ class ComplaintService:
     ) -> Complaint:
         """
         Create a new complaint.
-        
+
         - Auto-generates complaint_number (CMP-XXXXX)
         - Looks up category by name if provided
         - Sets initial status to SUBMITTED
@@ -148,7 +148,7 @@ class ComplaintService:
     ) -> dict:
         """
         List complaints with filtering, sorting, and pagination.
-        
+
         Citizens see only their own complaints.
         Officers see their department's complaints.
         Admins see all complaints.
@@ -319,7 +319,7 @@ class ComplaintService:
     def _validate_status_transition(self, old_status: str, new_status: str) -> None:
         """
         Validate complaint status transitions.
-        
+
         SUBMITTED → UNDER_REVIEW → ASSIGNED → IN_PROGRESS → RESOLVED → CLOSED
         Any → REJECTED
         ASSIGNED/IN_PROGRESS → ESCALATED

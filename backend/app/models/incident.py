@@ -12,7 +12,7 @@ are detected.
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import (
+from sqlalchemy import (  # type: ignore
     DateTime,
     Float,
     Index,
@@ -21,11 +21,11 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID  # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 
-from app.database import Base
-from app.core.constants import IncidentStatus
+from app.database import Base  # type: ignore
+from app.core.constants import IncidentStatus  # type: ignore
 
 
 class Incident(Base):

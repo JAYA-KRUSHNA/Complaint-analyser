@@ -19,36 +19,36 @@ It can also be re-run when models are upgraded (for research comparison).
 import uuid
 from typing import Optional
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 
-from app.core.constants import (
+from app.core.constants import (  # type: ignore
     CATEGORY_DEPARTMENT_MAP,
     DEFAULT_RESOLUTION_HOURS,
     ComplaintCategory,
 )
-from app.models.complaint import Complaint
-from app.models.department import Department
-from app.models.prediction_audit import PredictionAudit
-from app.models.priority_explanation import PriorityExplanation
-from app.services.impl.rule_based_classifier import (
+from app.models.complaint import Complaint  # type: ignore
+from app.models.department import Department  # type: ignore
+from app.models.prediction_audit import PredictionAudit  # type: ignore
+from app.models.priority_explanation import PriorityExplanation  # type: ignore
+from app.services.impl.rule_based_classifier import (  # type: ignore
     RuleBasedClassifier,
     detect_essential_service,
     detect_safety_risk,
     detect_vulnerable_population,
 )
-from app.services.impl.rule_based_severity import RuleBasedSeverity
-from app.services.impl.rule_based_urgency import RuleBasedUrgency
-from app.services.impl.priority_engine import PriorityEngine, PriorityInput
+from app.services.impl.rule_based_severity import RuleBasedSeverity  # type: ignore
+from app.services.impl.rule_based_urgency import RuleBasedUrgency  # type: ignore
+from app.services.impl.priority_engine import PriorityEngine, PriorityInput  # type: ignore
 
 
 class AnalysisPipeline:
     """
     Orchestrates the full analysis pipeline for a complaint.
-    
+
     This class coordinates all rule-based services and updates
     the complaint record with AI-computed fields.
-    
+
     In future phases, the service implementations can be swapped
     (e.g., RuleBasedClassifier → MLClassifier) without changing
     this pipeline — only the instantiation changes.
@@ -65,7 +65,7 @@ class AnalysisPipeline:
     async def analyze(self, complaint_id: uuid.UUID) -> Complaint:
         """
         Run the full analysis pipeline on a complaint.
-        
+
         Steps:
         1. Load complaint from DB
         2. Classify text → category
@@ -78,7 +78,7 @@ class AnalysisPipeline:
         9. Estimate resolution time
         10. Save prediction audit
         11. Persist all results
-        
+
         Returns:
             Updated Complaint object with all AI fields populated.
         """

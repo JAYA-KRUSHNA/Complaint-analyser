@@ -8,18 +8,18 @@ Soft-delete via is_active flag. PII fields kept separate for privacy.
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import (
+from sqlalchemy import (  # type: ignore
     Boolean,
     DateTime,
     String,
     Text,
     Index,
 )
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID  # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 
-from app.database import Base
-from app.core.constants import UserRole, Language
+from app.database import Base  # type: ignore
+from app.core.constants import UserRole, Language  # type: ignore
 
 
 class User(Base):
