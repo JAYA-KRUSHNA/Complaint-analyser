@@ -14,7 +14,7 @@ import uuid
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query  # type: ignore
-from sqlalchemy import desc, func, select, case  # type: ignore
+from sqlalchemy import desc, func, select, case, or_  # type: ignore
 from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 from sqlalchemy.orm import selectinload  # type: ignore
 
@@ -24,6 +24,7 @@ from app.models.user import User  # type: ignore
 from app.models.complaint import Complaint  # type: ignore
 from app.models.category import Category  # type: ignore
 from app.models.department import Department  # type: ignore
+from app.models.incident import Incident  # type: ignore
 from app.models.complaint_status_history import ComplaintStatusHistory  # type: ignore
 from app.core.constants import ComplaintStatus  # type: ignore
 
@@ -285,3 +286,138 @@ async def get_recent_activity(
         }
         for a in activities
     ]
+
+
+# ─── Geospatial Map Data ──────────────────────────────────────
+
+@router.get("/map", summary="Geospatial complaints and incidents for map")
+async def get_map_data(
+    priority_level: Optional[str] = Query(None, description="Filter by priority level (P1, P2, P3, P4)"),
+    status_filter: Optional[str] = Query(None, alias="status", description="Filter by status"),
+    category_id: Optional[uuid.UUID] = Query(None, description="Filter by category ID"),
+    search: Optional[str] = Query(None, description="Search in title or complaint number"),
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Get geolocated complaints and active incidents for interactive map rendering.
+    Supports filtering by priority, status, category, and keyword search.
+    """
+    query = (
+        select(Complaint)
+        .options(selectinload(Complaint.category))
+        .where(
+            Complaint.latitude.isnot(None),
+            Complaint.longitude.isnot(None),
+        )
+    )
+
+    # Role restrictions
+    if current_user.role == "CITIZEN":
+        query = query.where(Complaint.user_id == current_user.id)
+    elif current_user.role == "DEPARTMENT_OFFICER" and current_user.department_id:
+        query = query.where(Complaint.department_id == current_user.department_id)
+
+    # Filters
+    if priority_level and priority_level != "ALL":
+        query = query.where(Complaint.priority_level == priority_level.upper())
+    if status_filter and status_filter != "ALL":
+        query = query.where(Complaint.status == status_filter.upper())
+    if category_id:
+        query = query.where(Complaint.category_id == category_id)
+    if search:
+        term = f"%{search}%"
+        query = query.where(
+            or_(
+                Complaint.title.ilike(term),
+                Complaint.complaint_number.ilike(term),
+                Complaint.location_text.ilike(term),
+            )
+        )
+
+    # Order by priority score descending
+    query = query.order_by(desc(Complaint.priority_score), desc(Complaint.created_at)).limit(500)
+
+    result = await db.execute(query)
+    complaints = result.scalars().all()
+
+    # Query active incidents
+    incidents_query = (
+        select(Incident)
+        .where(
+            Incident.latitude.isnot(None),
+            Incident.longitude.isnot(None),
+        )
+        .order_by(desc(Incident.complaint_count), desc(Incident.priority_score))
+        .limit(50)
+    )
+    incidents_res = await db.execute(incidents_query)
+    incidents = incidents_res.scalars().all()
+
+    # Format complaints & tally summary
+    mapped_complaints = []
+    p1_count = 0
+    p2_count = 0
+    p3_count = 0
+    p4_count = 0
+
+    for c in complaints:
+        plevel = c.priority_level or "P3"
+        if plevel == "P1":
+            p1_count += 1
+        elif plevel == "P2":
+            p2_count += 1
+        elif plevel == "P3":
+            p3_count += 1
+        elif plevel == "P4":
+            p4_count += 1
+
+        mapped_complaints.append({
+            "id": str(c.id),
+            "complaint_number": c.complaint_number,
+            "title": c.title,
+            "description": c.description,
+            "category": c.category.display_name if c.category else "General",
+            "category_id": str(c.category_id) if c.category_id else None,
+            "priority_level": plevel,
+            "priority_score": c.priority_score or 50,
+            "severity_level": c.severity_level or "MEDIUM",
+            "urgency_level": c.urgency_level or "MEDIUM",
+            "status": c.status,
+            "latitude": c.latitude,
+            "longitude": c.longitude,
+            "location_text": c.location_text or "Geo-tagged location",
+            "created_at": c.created_at.isoformat() if c.created_at else None,
+        })
+
+    # Format incidents
+    mapped_incidents = []
+    for inc in incidents:
+        mapped_incidents.append({
+            "id": str(inc.id),
+            "title": inc.title,
+            "category": inc.category or "Civic",
+            "description": inc.description,
+            "latitude": inc.latitude,
+            "longitude": inc.longitude,
+            "radius": inc.radius or 500.0,
+            "complaint_count": inc.complaint_count,
+            "severity_score": inc.severity_score,
+            "priority_score": inc.priority_score,
+            "affected_population": inc.affected_population or "MEDIUM",
+            "status": inc.status,
+        })
+
+    return {
+        "total_complaints": len(mapped_complaints),
+        "total_incidents": len(mapped_incidents),
+        "summary": {
+            "P1": p1_count,
+            "P2": p2_count,
+            "P3": p3_count,
+            "P4": p4_count,
+        },
+        "complaints": mapped_complaints,
+        "incidents": mapped_incidents,
+    }
+

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { dashboardApi, complaintsApi } from '../lib/api';
-import { getStatusBadge, formatDate } from '../lib/constants';
+import { getStatusBadge } from '../lib/constants';
 import {
-  Shield, AlertTriangle, Zap, Clock, ChevronLeft, ChevronRight,
+  Shield, AlertTriangle, Zap, ChevronLeft, ChevronRight,
   Filter, ArrowUpDown,
 } from 'lucide-react';
 
@@ -133,7 +133,7 @@ export default function PriorityQueuePage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {queue.map((item, idx) => {
+          {queue.map((item) => {
             const statusInfo = getStatusBadge(item.status);
             return (
               <div

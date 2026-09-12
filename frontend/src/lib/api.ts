@@ -114,4 +114,19 @@ export const analysisApi = {
   getExplanation: (id: string) => api.get(`/analysis/${id}/explanation`),
 };
 
+// ─── Geospatial Map API ──────────────────────────────────────
+export const mapApi = {
+  getMapData: (params?: {
+    priority_level?: string;
+    status?: string;
+    category_id?: string;
+    search?: string;
+  }) => api.get('/dashboard/map', { params }),
+
+  getHeatmapData: () => api.get('/analytics/heatmap'),
+
+  getIncidents: () => api.get('/analytics/incidents'),
+};
+
 export default api;
+

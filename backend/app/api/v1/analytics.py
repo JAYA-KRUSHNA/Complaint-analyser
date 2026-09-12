@@ -157,6 +157,8 @@ async def get_heatmap_data(
             Complaint.severity_level,
             Complaint.title,
             Complaint.complaint_number,
+            Complaint.priority_level,
+            Complaint.id,
         )
         .where(
             Complaint.latitude.isnot(None),
@@ -175,6 +177,8 @@ async def get_heatmap_data(
             "severity": row[3],
             "title": row[4],
             "number": row[5],
+            "priority_level": row[6] or "P3",
+            "id": str(row[7]),
         })
 
     return {

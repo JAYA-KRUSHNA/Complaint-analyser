@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { dashboardApi, complaintsApi } from '../lib/api';
 import {
   FileText, AlertTriangle, CheckCircle2, Clock, TrendingUp,
-  ArrowUpRight, Layers, Zap, BarChart3, Plus,
+  ArrowUpRight, Layers, BarChart3, Plus,
 } from 'lucide-react';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
@@ -84,7 +84,7 @@ export default function DashboardPage() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger">
-        {statCards.map((s, i) => (
+        {statCards.map((s) => (
           <div key={s.label} className="glass-card p-5">
             <div className="flex items-start justify-between">
               <div>

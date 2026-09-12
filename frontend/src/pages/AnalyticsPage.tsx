@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { dashboardApi, analysisApi } from '../lib/api';
+import { dashboardApi } from '../lib/api';
 import {
   BarChart3, TrendingUp, Brain, Layers, Zap, AlertTriangle, Target,
-  ArrowUpRight,
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, RadialBarChart, RadialBar, Legend,
+  PieChart, Pie, Cell,
 } from 'recharts';
 import api from '../lib/api';
 
@@ -16,7 +14,6 @@ const COLORS = ['#4f46e5', '#2563eb', '#0891b2', '#059669', '#ca8a04', '#ea580c'
 export default function AnalyticsPage() {
   const [stats, setStats] = useState<any>(null);
   const [categoryData, setCategoryData] = useState<any[]>([]);
-  const [departmentData, setDepartmentData] = useState<any[]>([]);
   const [categoryTrends, setCategoryTrends] = useState<any[]>([]);
   const [models, setModels] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -27,16 +24,14 @@ export default function AnalyticsPage() {
 
   async function loadAll() {
     try {
-      const [statsRes, catRes, deptRes, trendsRes, modelsRes] = await Promise.all([
+      const [statsRes, catRes, trendsRes, modelsRes] = await Promise.all([
         dashboardApi.getStats(),
         dashboardApi.getByCategory(),
-        dashboardApi.getByDepartment().catch(() => ({ data: [] })),
         api.get('/analytics/category-trends').catch(() => ({ data: [] })),
         api.get('/ml/models').catch(() => ({ data: { models: {} } })),
       ]);
       setStats(statsRes.data);
       setCategoryData(catRes.data);
-      setDepartmentData(deptRes.data);
       setCategoryTrends(trendsRes.data);
       setModels(modelsRes.data);
     } catch (err) {
@@ -110,7 +105,7 @@ export default function AnalyticsPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={categoryData.map((d, i) => ({ ...d, name: d.category, value: d.count }))}
+                    data={categoryData.map((d) => ({ ...d, name: d.category, value: d.count }))}
                     cx="50%"
                     cy="50%"
                     outerRadius={90}

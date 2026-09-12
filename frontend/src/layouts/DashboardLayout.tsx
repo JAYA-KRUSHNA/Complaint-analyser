@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, FileText, Plus, LogOut, Menu, X,
   Shield, ChevronDown, BarChart3, ListChecks, ChevronLeft,
-  Bell, Search,
+  Bell, Search, MapPin,
 } from 'lucide-react';
 
 export default function DashboardLayout() {
@@ -24,6 +24,7 @@ export default function DashboardLayout() {
       label: 'Overview',
       items: [
         { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { path: '/map', label: 'Civic Map', icon: MapPin },
       ],
     },
     {

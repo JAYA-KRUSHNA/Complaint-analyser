@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { complaintsApi } from '../lib/api';
 import { getStatusBadge, formatDate } from '../lib/constants';
-import { FileText, Plus, Filter, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FileText, Plus, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ComplaintsListPage() {
   const [complaints, setComplaints] = useState<any[]>([]);
@@ -11,7 +11,6 @@ export default function ComplaintsListPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
-  const [search, setSearch] = useState('');
 
   const pageSize = 10;
 

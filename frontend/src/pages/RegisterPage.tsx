@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Shield, Eye, EyeOff, ArrowRight, UserPlus } from 'lucide-react';
+import { Shield, Eye, EyeOff, UserPlus } from 'lucide-react';
 
 export default function RegisterPage() {
   const { register } = useAuth();

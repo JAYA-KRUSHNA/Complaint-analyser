@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { complaintsApi } from '../lib/api';
 import { getStatusBadge, formatDate, timeAgo } from '../lib/constants';
-import { ArrowLeft, MapPin, Clock, Tag, Building2, User, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Tag, Building2 } from 'lucide-react';
 
 export default function ComplaintDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -157,7 +157,7 @@ export default function ComplaintDetailPage() {
           <h2 className="text-lg font-semibold text-civic-800 mb-4">Status Timeline</h2>
           <div className="relative pl-6 space-y-4">
             <div className="absolute left-2 top-2 bottom-2 w-0.5 bg-civic-200" />
-            {complaint.status_history.map((h: any, i: number) => {
+            {complaint.status_history.map((h: any) => {
               const hStatus = getStatusBadge(h.new_status);
               return (
                 <div key={h.id} className="relative">

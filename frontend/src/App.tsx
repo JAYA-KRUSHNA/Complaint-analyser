@@ -9,6 +9,7 @@ import NewComplaintPage from './pages/NewComplaintPage';
 import ComplaintDetailPage from './pages/ComplaintDetailPage';
 import PriorityQueuePage from './pages/PriorityQueuePage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import MapPage from './pages/MapPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -41,6 +42,7 @@ function AppRoutes() {
       {/* Protected */}
       <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/map" element={<MapPage />} />
         <Route path="/complaints" element={<ComplaintsListPage />} />
         <Route path="/complaints/new" element={<NewComplaintPage />} />
         <Route path="/complaints/:id" element={<ComplaintDetailPage />} />
