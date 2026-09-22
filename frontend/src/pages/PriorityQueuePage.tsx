@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { dashboardApi, complaintsApi } from '../lib/api';
 import { getStatusBadge } from '../lib/constants';
+import { useToast } from '../contexts/ToastContext';
 import {
   Shield, AlertTriangle, Zap, ChevronLeft, ChevronRight,
-  Filter, ArrowUpDown,
+  Filter, ArrowUpDown, ExternalLink, X,
 } from 'lucide-react';
+import { SkeletonQueueItem } from '../components/Skeleton';
 
 export default function PriorityQueuePage() {
+  const { success: toastSuccess, error: toastError } = useToast();
   const [queue, setQueue] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -51,37 +54,31 @@ export default function PriorityQueuePage() {
         status: newStatus,
         comment: statusComment || undefined,
       });
+      toastSuccess('Status updated', `${selectedComplaint.complaint_number} → ${newStatus.replace('_', ' ')}`);
       setSelectedComplaint(null);
       setNewStatus('');
       setStatusComment('');
       loadQueue();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to update status');
+      toastError('Update failed', err.response?.data?.error || 'Failed to update status');
     } finally {
       setUpdating(false);
     }
   }
 
-  const priorityColor = (level: string) => {
-    const map: Record<string, string> = {
-      P1: 'bg-red-600', P2: 'bg-orange-500', P3: 'bg-yellow-400', P4: 'bg-green-500',
-    };
-    return map[level] || 'bg-gray-400';
-  };
-
-  const priorityLabel = (level: string) => {
-    const map: Record<string, string> = {
-      P1: 'CRITICAL', P2: 'HIGH', P3: 'MEDIUM', P4: 'LOW',
-    };
-    return map[level] || level;
+  const priorityConfig: Record<string, { color: string; shadow: string; label: string }> = {
+    P1: { color: 'bg-red-600', shadow: 'shadow-red-500/20', label: 'CRITICAL' },
+    P2: { color: 'bg-orange-500', shadow: 'shadow-orange-500/20', label: 'HIGH' },
+    P3: { color: 'bg-amber-400', shadow: 'shadow-amber-500/20', label: 'MEDIUM' },
+    P4: { color: 'bg-emerald-500', shadow: 'shadow-emerald-500/20', label: 'LOW' },
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="page-title flex items-center gap-2">
-            <Shield className="w-6 h-6 text-primary-600" /> Priority Queue
+          <h1 className="page-title flex items-center gap-2 font-display">
+            <Shield className="w-5 h-5 text-primary-600" /> Priority Queue
           </h1>
           <p className="page-subtitle">{total} complaints sorted by priority score</p>
         </div>
@@ -89,7 +86,7 @@ export default function PriorityQueuePage() {
 
       {/* Filters */}
       <div className="glass-card p-4 flex flex-col sm:flex-row gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <Filter className="w-4 h-4 text-civic-400" />
           <select
             value={statusFilter}
@@ -104,7 +101,7 @@ export default function PriorityQueuePage() {
             <option value="ESCALATED">Escalated</option>
           </select>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <ArrowUpDown className="w-4 h-4 text-civic-400" />
           <select
             value={priorityFilter}
@@ -122,64 +119,65 @@ export default function PriorityQueuePage() {
 
       {/* Queue */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => <SkeletonQueueItem key={i} />)}
         </div>
       ) : queue.length === 0 ? (
-        <div className="card p-12 text-center">
-          <Shield className="w-16 h-16 text-civic-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-civic-700">Queue empty</h3>
-          <p className="text-civic-400 mt-1">No analyzed complaints match your filters</p>
+        <div className="glass-card p-12 text-center">
+          <Shield className="w-14 h-14 text-civic-300 mx-auto mb-4" />
+          <h3 className="text-lg font-bold text-civic-700 font-display">Queue empty</h3>
+          <p className="text-civic-400 mt-1 text-sm">No analyzed complaints match your filters</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 stagger">
           {queue.map((item) => {
             const statusInfo = getStatusBadge(item.status);
+            const pCfg = priorityConfig[item.priority_level] || { color: 'bg-gray-400', shadow: '', label: item.priority_level };
             return (
               <div
                 key={item.id}
-                className="card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:border-primary-200 transition-all"
+                className="glass-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4"
               >
                 {/* Priority Badge */}
-                <div className="flex items-center gap-3 sm:w-24 shrink-0">
-                  <div className={`w-10 h-10 rounded-xl ${priorityColor(item.priority_level)} flex items-center justify-center text-white font-bold text-sm shadow-md`}>
+                <div className="flex items-center gap-3 sm:w-28 shrink-0">
+                  <div className={`w-10 h-10 rounded-xl ${pCfg.color} flex items-center justify-center text-white font-extrabold text-sm shadow-lg ${pCfg.shadow} font-display`}>
                     {item.priority_score}
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-civic-500">{item.priority_level}</p>
-                    <p className="text-[10px] text-civic-400 uppercase">{priorityLabel(item.priority_level)}</p>
+                    <p className="text-xs font-bold text-civic-600">{item.priority_level}</p>
+                    <p className="text-[10px] text-civic-400 uppercase font-semibold tracking-wider">{pCfg.label}</p>
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="text-xs font-mono text-civic-400">{item.complaint_number}</span>
+                  <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                    <span className="text-[11px] font-mono text-civic-400">{item.complaint_number}</span>
                     <span className={statusInfo.class}>{statusInfo.label}</span>
                     {item.safety_risk && (
-                      <span className="badge bg-red-100 text-red-600 border border-red-200">
+                      <span className="badge bg-red-50 text-red-600 ring-1 ring-red-200/60">
                         <AlertTriangle className="w-3 h-3 mr-0.5" /> Safety
                       </span>
                     )}
                     {item.essential_service && (
-                      <span className="badge bg-blue-100 text-blue-600 border border-blue-200">
+                      <span className="badge bg-blue-50 text-blue-600 ring-1 ring-blue-200/60">
                         <Zap className="w-3 h-3 mr-0.5" /> Essential
                       </span>
                     )}
                   </div>
                   <Link
                     to={`/complaints/${item.id}`}
-                    className="text-sm font-medium text-civic-800 hover:text-primary-600 transition-colors"
+                    className="text-sm font-semibold text-civic-800 hover:text-primary-600 transition-colors"
                   >
                     {item.title}
                   </Link>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-civic-400">
-                    <span>{item.category_name || 'Uncategorized'}</span>
-                    <span>•</span>
+                  <div className="flex items-center gap-2.5 mt-1.5 text-xs text-civic-400 flex-wrap">
+                    <span className="font-medium">{item.category_name || 'Uncategorized'}</span>
+                    <span className="text-civic-300">•</span>
                     <span>{item.department_name || 'Unassigned'}</span>
-                    <span>•</span>
+                    <span className="text-civic-300">•</span>
                     <span>{item.severity_level}</span>
-                    <span>•</span>
+                    <span className="text-civic-300">•</span>
                     <span>{item.location_text || 'No location'}</span>
                   </div>
                 </div>
@@ -188,7 +186,7 @@ export default function PriorityQueuePage() {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => setSelectedComplaint(item)}
-                    className="btn-secondary btn-sm"
+                    className="btn-secondary btn-sm font-semibold"
                   >
                     Update Status
                   </button>
@@ -196,7 +194,7 @@ export default function PriorityQueuePage() {
                     to={`/complaints/${item.id}`}
                     className="btn-ghost btn-sm"
                   >
-                    View
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </div>
@@ -208,7 +206,7 @@ export default function PriorityQueuePage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-civic-500">Page {page} of {totalPages}</p>
+          <p className="text-sm text-civic-400 font-medium">Page {page} of {totalPages}</p>
           <div className="flex gap-2">
             <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="btn-secondary btn-sm">
               <ChevronLeft className="w-4 h-4" />
@@ -223,9 +221,15 @@ export default function PriorityQueuePage() {
       {/* Status Update Modal */}
       {selectedComplaint && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setSelectedComplaint(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-scale-in" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-civic-800 mb-1">Update Status</h3>
-            <p className="text-sm text-civic-400 mb-4">{selectedComplaint.complaint_number} — {selectedComplaint.title}</p>
+          <div className="glass-elevated w-full max-w-md p-7 animate-scale-in relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedComplaint(null)}
+              className="absolute top-4 right-4 text-civic-400 hover:text-civic-600 transition-colors p-1 rounded-lg hover:bg-civic-100"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <h3 className="text-lg font-bold text-civic-800 mb-1 font-display">Update Status</h3>
+            <p className="text-sm text-civic-400 mb-5">{selectedComplaint.complaint_number} — {selectedComplaint.title}</p>
             
             <div className="space-y-4">
               <div>
@@ -251,7 +255,7 @@ export default function PriorityQueuePage() {
               </div>
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setSelectedComplaint(null)} className="btn-secondary flex-1">Cancel</button>
-                <button onClick={handleStatusUpdate} disabled={!newStatus || updating} className="btn-primary flex-1">
+                <button onClick={handleStatusUpdate} disabled={!newStatus || updating} className="btn-primary flex-1 shadow-primary">
                   {updating ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Update'}
                 </button>
               </div>

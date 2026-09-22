@@ -26,6 +26,7 @@ from app.schemas.complaint import (  # type: ignore
     ComplaintListResponse,
     ComplaintUpdateRequest,
     PaginatedResponse,
+    PriorityExplanationResponse,
     StatusHistoryResponse,
     StatusUpdateRequest,
 )
@@ -282,5 +283,8 @@ def _to_detail_response(complaint) -> ComplaintDetailResponse:
             StatusHistoryResponse.model_validate(h)
             for h in (complaint.status_history or [])
         ],
-        priority_explanations=[],
+        priority_explanations=[
+            PriorityExplanationResponse.model_validate(exp)
+            for exp in (complaint.priority_explanations or [])
+        ],
     )
