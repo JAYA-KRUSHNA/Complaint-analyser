@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { Shield, Eye, EyeOff, ArrowRight, ArrowLeft, Lock, Mail, Sparkles, Heart } from 'lucide-react';
+import {
+  Shield, Eye, EyeOff, ArrowRight, Lock, Mail,
+  ArrowLeft, ChevronDown, Sparkles, AlertTriangle, Heart
+} from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -18,114 +21,353 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!email || !password) { setError('Please fill in all fields'); return; }
+    if (!email || !password) {
+      setError('Please check your email and password and try again.');
+      return;
+    }
     setLoading(true);
     try {
       await login(email, password);
       toastSuccess('Welcome back!', 'Signed in successfully');
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Invalid email or password');
+      setError(err.response?.data?.detail || 'Please check your email and password and try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fillDemo = async (demoEmail: string, demoPassword: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setError('');
+    setShowDemo(false);
+    setLoading(true);
+    try {
+      await login(demoEmail, demoPassword);
+      toastSuccess('Welcome back!', `Signed in as ${demoEmail.startsWith('admin') ? 'Administrator' : 'Officer'}`);
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Please check your email and password and try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#f6f8fc' }}>
-      <div className="flex-1 flex items-center justify-center px-4 py-10">
-        <div className="w-full max-w-sm">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <Link to="/" className="inline-flex items-center gap-2.5 mb-6 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-xl flex items-center justify-center text-white" style={{ boxShadow: '0 3px 12px -2px rgba(79,70,229,0.3)' }}>
-                <Shield className="w-5 h-5" />
-              </div>
-              <span className="text-lg font-extrabold tracking-tight text-slate-900 font-display">CiviSense</span>
-            </Link>
-            <h1 className="text-2xl font-bold text-slate-900 font-display">Welcome Back</h1>
-            <p className="text-sm text-slate-400 mt-1">Sign in to your account</p>
+    <div className="min-h-screen flex flex-col justify-between relative overflow-hidden" style={{ background: '#F6F8FC' }}>
+      {/* ── Background Vibrant Ambient Lighting (Refracts through Glass) ─ */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-[250px] left-1/2 -translate-x-1/2 w-[850px] h-[850px] rounded-full opacity-45" style={{ background: 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.04) 50%, transparent 70%)' }} />
+        <div className="absolute bottom-[5%] right-[10%] w-[550px] h-[550px] rounded-full opacity-35" style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%)' }} />
+        <div className="absolute top-[30%] left-[5%] w-[500px] h-[500px] rounded-full opacity-30" style={{ background: 'radial-gradient(circle, rgba(8,145,178,0.05) 0%, transparent 70%)' }} />
+      </div>
+
+      {/* ── Top Navigation Bar ──────────────────────────────── */}
+      <header className="relative z-10 w-full max-w-[1240px] mx-auto px-6 pt-6 flex items-center justify-between">
+        <Link to="/" className="inline-flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-[10px] flex items-center justify-center text-white transition-transform group-hover:scale-105 shadow-sm shadow-indigo-500/20" style={{ background: '#4F46E5' }}>
+            <Shield className="w-4 h-4" />
           </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[16px] font-bold text-[#172033] tracking-tight">CiviSense</span>
+            <span className="hidden sm:inline-block text-[12px] text-[#64748B] font-medium border-l border-[#E2E8F0] pl-2">Civic Intelligence</span>
+          </div>
+        </Link>
 
-          {/* Card */}
-          <div className="p-6 rounded-2xl" style={{ background: 'rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.95)', boxShadow: '0 1px 3px rgba(15,23,42,0.03), 0 8px 24px -4px rgba(15,23,42,0.06)' }}>
-            {error && (
-              <div className="mb-4 px-3 py-2.5 rounded-xl text-[12px] font-medium text-rose-700 bg-rose-50 border border-rose-100">
-                {error}
-              </div>
-            )}
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#64748B] hover:text-[#172033] transition-colors group px-3.5 py-1.5 rounded-full hover:bg-white/70"
+          style={{
+            background: 'rgba(255, 255, 255, 0.50)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.70)',
+          }}
+        >
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+          <span>Back to Home</span>
+        </Link>
+      </header>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-[12px] font-semibold text-slate-600 mb-1.5">Email</label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@example.com" required
-                    className="w-full pl-10 pr-3 py-2.5 rounded-xl text-sm bg-slate-50 border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:bg-white outline-none transition-all" />
-                </div>
-              </div>
+      {/* ── Centered Glassmorphic Authentication Card ───────── */}
+      <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-8">
+        <div
+          className="w-full max-w-[420px] rounded-[24px] p-8 sm:p-9 relative overflow-hidden transition-all duration-300"
+          style={{
+            background: 'rgba(255, 255, 255, 0.78)',
+            backdropFilter: 'blur(24px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            border: '1px solid rgba(255, 255, 255, 0.90)',
+            boxShadow: '0 25px 60px -15px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.6) inset',
+          }}
+        >
+          {/* Subtle top inner gradient highlight */}
+          <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(79,70,229,0.4) 50%, transparent)' }} />
 
-              <div>
-                <label className="block text-[12px] font-semibold text-slate-600 mb-1.5">Password</label>
-                <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter password" required
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl text-sm bg-slate-50 border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:bg-white outline-none transition-all" />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Demo hint */}
-              <div className="flex items-center justify-end">
-                <div className="relative">
-                  <button type="button" onClick={() => setShowDemo(!showDemo)} className="text-[11px] text-indigo-500 font-semibold hover:text-indigo-700 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> Demo credentials
-                  </button>
-                  {showDemo && (
-                    <>
-                      <div className="fixed inset-0 z-40" onClick={() => setShowDemo(false)} />
-                      <div className="absolute right-0 top-6 z-50 w-52 p-3 rounded-xl bg-white border border-slate-200 shadow-lg animate-scale-in">
-                        <div className="space-y-1.5 text-[11px] mb-2.5">
-                          <div className="flex justify-between"><span className="text-slate-400">Email:</span><span className="font-mono font-bold text-slate-700">admin@civisense.ai</span></div>
-                          <div className="flex justify-between"><span className="text-slate-400">Password:</span><span className="font-mono font-bold text-slate-700">admin123</span></div>
-                        </div>
-                        <button type="button" onClick={() => { setEmail('admin@civisense.ai'); setPassword('admin123'); setShowDemo(false); }}
-                          className="w-full py-1.5 rounded-lg text-[11px] font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
-                          Auto-fill
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <button type="submit" disabled={loading}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 group"
-                style={{ background: 'linear-gradient(135deg, #4f46e5, #4338ca)', boxShadow: '0 2px 10px -2px rgba(79,70,229,0.3)' }}>
-                {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <>Sign In <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" /></>}
-              </button>
-            </form>
-
-            <p className="mt-5 text-center text-[13px] text-slate-400">
-              Don't have an account? <Link to="/register" className="text-indigo-600 font-bold hover:text-indigo-700">Register</Link>
+          {/* Greeting */}
+          <div className="text-center mb-6">
+            <h1 className="text-[25px] sm:text-[27px] font-bold text-[#172033] tracking-tight">
+              Welcome back 👋
+            </h1>
+            <p className="text-[14px] text-[#64748B] mt-1.5">
+              Let's get your civic workspace ready.
             </p>
           </div>
 
-          <Link to="/" className="mt-4 flex items-center justify-center gap-1.5 text-[12px] text-slate-400 hover:text-slate-600 transition-colors group">
-            <ArrowLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" /> Back to home
-          </Link>
-        </div>
-      </div>
+          {/* Error Message */}
+          {error && (
+            <div className="mb-5 px-4 py-3 rounded-[12px] text-[13px] flex items-start gap-2.5" style={{ background: '#FEF2F2', border: '1px solid rgba(220,38,38,0.15)' }}>
+              <AlertTriangle className="w-4 h-4 text-[#DC2626] shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-[#DC2626]">We couldn't sign you in.</p>
+                <p className="text-[#64748B] text-[12px] mt-0.5">{error}</p>
+              </div>
+            </div>
+          )}
 
-      {/* Footer */}
-      <footer className="py-3 flex items-center justify-center gap-1.5" style={{ borderTop: '1px solid rgba(226,232,240,0.35)' }}>
-        <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
-        <span className="text-[10px] font-bold font-display bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, #4f46e5, #0ea5e9)' }}>Jayakrushna & Keerthi</span>
-        <Heart className="w-2.5 h-2.5 text-rose-500 fill-rose-500" />
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="login-email" className="block text-[13px] font-semibold text-[#172033] mb-1.5">
+                Email address
+              </label>
+              <div className="relative">
+                <Mail className="w-[18px] h-[18px] text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  id="login-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  required
+                  autoComplete="email"
+                  className="w-full pl-11 pr-4 py-2.5 rounded-[12px] text-[14px] text-[#172033] placeholder:text-[#94A3B8] outline-none transition-all duration-150"
+                  style={{
+                    background: 'rgba(248, 250, 252, 0.85)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid #E2E8F0'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#4F46E5';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(79,70,229,0.1)';
+                    e.target.style.background = '#FFFFFF';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E2E8F0';
+                    e.target.style.boxShadow = 'none';
+                    e.target.style.background = 'rgba(248, 250, 252, 0.85)';
+                  }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="login-password" className="block text-[13px] font-semibold text-[#172033] mb-1.5">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="w-[18px] h-[18px] text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  id="login-password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  required
+                  autoComplete="current-password"
+                  className="w-full pl-11 pr-11 py-2.5 rounded-[12px] text-[14px] text-[#172033] placeholder:text-[#94A3B8] outline-none transition-all duration-150"
+                  style={{
+                    background: 'rgba(248, 250, 252, 0.85)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid #E2E8F0'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#4F46E5';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(79,70,229,0.1)';
+                    e.target.style.background = '#FFFFFF';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E2E8F0';
+                    e.target.style.boxShadow = 'none';
+                    e.target.style.background = 'rgba(248, 250, 252, 0.85)';
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#64748B] transition-colors p-1"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-[17px] h-[17px]" /> : <Eye className="w-[17px] h-[17px]" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-[12px] text-[14px] font-semibold text-white transition-all duration-150 hover:-translate-y-[1px] hover:shadow-lg hover:shadow-indigo-500/25 disabled:opacity-60 disabled:translate-y-0 disabled:shadow-none group mt-1"
+              style={{ background: '#4F46E5' }}
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                <>
+                  <span>Sign In</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Create account link */}
+          <p className="mt-5 text-[13px] text-[#64748B] text-center">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-[#4F46E5] font-semibold hover:text-[#4338CA] transition-colors">
+              Create account
+            </Link>
+          </p>
+
+          {/* Demo access section with frosted glass */}
+          <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(226, 232, 240, 0.8)' }}>
+            <button
+              type="button"
+              onClick={() => setShowDemo(!showDemo)}
+              className="flex items-center justify-between text-[13px] font-medium text-[#64748B] hover:text-[#172033] transition-colors w-full py-1 cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-[#4F46E5]" />
+                <span className="font-semibold text-[#172033]">Demo access</span>
+                <span className="text-[11px] text-[#94A3B8] font-normal">(Instant 1-Click Login)</span>
+              </div>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showDemo ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showDemo && (
+              <div className="mt-3 grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => fillDemo('admin@civisense.ai', 'admin123')}
+                  className="p-3 rounded-[12px] text-left transition-all hover:-translate-y-[1px] hover:shadow-sm group cursor-pointer"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.90)',
+                    border: '1px solid #E2E8F0',
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-[12px] font-bold text-[#172033]">Administrator</p>
+                    <span className="text-[10px] font-semibold text-[#4F46E5] group-hover:underline">Sign In →</span>
+                  </div>
+                  <p className="text-[11px] text-[#64748B] mt-0.5 truncate">admin@civisense.ai</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fillDemo('officer@civisense.ai', 'officer123')}
+                  className="p-3 rounded-[12px] text-left transition-all hover:-translate-y-[1px] hover:shadow-sm group cursor-pointer"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.90)',
+                    border: '1px solid #E2E8F0',
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-[12px] font-bold text-[#172033]">Officer</p>
+                    <span className="text-[10px] font-semibold text-[#4F46E5] group-hover:underline">Sign In →</span>
+                  </div>
+                  <p className="text-[11px] text-[#64748B] mt-0.5 truncate">officer@civisense.ai</p>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+
+      {/* ── Ultra-Premium Glassmorphic Footer & Creator Attribution ──── */}
+      <footer
+        className="relative z-10 w-full max-w-[1240px] mx-auto px-6 py-6"
+      >
+        <div
+          className="p-4 sm:p-5 rounded-[20px] flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300"
+          style={{
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.82) 100%)',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+            border: '1px solid rgba(255, 255, 255, 0.9)',
+            boxShadow: '0 8px 32px -4px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(99, 102, 241, 0.08)',
+          }}
+        >
+          {/* Left Brand Identity */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-[8px] flex items-center justify-center text-white shadow-xs" style={{ background: '#4F46E5' }}>
+              <Shield className="w-4 h-4" />
+            </div>
+            <div className="flex items-center gap-2 text-[13px]">
+              <span className="font-extrabold text-[#172033] tracking-tight">CiviSense AI</span>
+              <span className="text-[#94A3B8]">·</span>
+              <span className="text-[#64748B] font-medium hidden sm:inline">Municipal Operations Portal</span>
+            </div>
+          </div>
+
+          {/* Center: THE SHOWCASE - Jaya Krushna & Keerthi */}
+          <div
+            className="inline-flex items-center gap-3 px-4 py-2 rounded-full transition-transform hover:scale-[1.02]"
+            style={{
+              background: 'linear-gradient(135deg, rgba(238, 242, 255, 0.95) 0%, rgba(253, 244, 255, 0.95) 100%)',
+              border: '1px solid rgba(129, 140, 248, 0.35)',
+              boxShadow: '0 2px 10px rgba(79, 70, 229, 0.08)',
+            }}
+          >
+            {/* Dual Monograms */}
+            <div className="flex items-center -space-x-1.5">
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-black shadow-xs ring-2 ring-white"
+                style={{ background: 'linear-gradient(135deg, #1E1B4B 0%, #4338CA 100%)' }}
+              >
+                JK
+              </div>
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-black shadow-xs ring-2 ring-white"
+                style={{ background: 'linear-gradient(135deg, #701A75 0%, #BE185D 100%)' }}
+              >
+                K
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-[12px] sm:text-[13px] font-medium text-[#334155]">
+              <span>Engineered by</span>
+              <strong
+                className="font-black text-[14px] sm:text-[15px]"
+                style={{
+                  background: 'linear-gradient(135deg, #1E1B4B 0%, #4338CA 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Jaya Krushna
+              </strong>
+              <span className="font-bold text-[#818CF8]">&</span>
+              <strong
+                className="font-black text-[14px] sm:text-[15px]"
+                style={{
+                  background: 'linear-gradient(135deg, #701A75 0%, #BE185D 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Keerthi
+              </strong>
+              <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 animate-pulse ml-0.5" />
+            </div>
+          </div>
+
+          {/* Right Status */}
+          <div className="text-[12px] text-[#94A3B8] font-medium flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>Civic Platform · © 2026</span>
+          </div>
+        </div>
       </footer>
     </div>
   );

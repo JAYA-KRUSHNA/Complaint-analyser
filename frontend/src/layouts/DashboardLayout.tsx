@@ -351,11 +351,40 @@ export default function DashboardLayout() {
         </main>
 
         {/* Footer */}
-        <footer className="py-2.5 px-4 lg:px-6 flex items-center justify-center gap-1.5 border-t border-civic-200/20 bg-white/50 backdrop-blur-sm">
-          <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
-          <span className="text-[10px] text-civic-400 font-medium">Built by</span>
-          <span className="text-[10px] font-bold font-display bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, #4f46e5, #0ea5e9, #8b5cf6)' }}>Jayakrushna & Keerthi</span>
-          <Heart className="w-2.5 h-2.5 text-rose-500 fill-rose-500" />
+        <footer className="py-3 px-4 lg:px-6 flex items-center justify-center border-t border-civic-200/40 bg-white/70 backdrop-blur-md">
+          <div
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-medium"
+            style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              border: '1px solid rgba(129, 140, 248, 0.25)',
+              boxShadow: '0 2px 6px rgba(79, 70, 229, 0.04)',
+            }}
+          >
+            <Sparkles className="w-3 h-3 text-indigo-500" />
+            <span className="text-slate-500">Engineered by</span>
+            <strong
+              className="font-black text-[12px]"
+              style={{
+                background: 'linear-gradient(135deg, #1E1B4B 0%, #4338CA 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              Jaya Krushna
+            </strong>
+            <span className="text-indigo-400 font-bold">&</span>
+            <strong
+              className="font-black text-[12px]"
+              style={{
+                background: 'linear-gradient(135deg, #701A75 0%, #BE185D 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              Keerthi
+            </strong>
+            <Heart className="w-3 h-3 text-rose-500 fill-rose-500 animate-pulse ml-0.5" />
+          </div>
         </footer>
       </div>
     </div>

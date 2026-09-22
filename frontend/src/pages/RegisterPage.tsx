@@ -268,11 +268,40 @@ export default function RegisterPage() {
     </div>
 
     {/* Footer */}
-    <footer className="py-2.5 px-4 sm:px-6 flex items-center justify-center gap-1.5" style={{ background: 'rgba(248,250,252,0.9)', borderTop: '1px solid rgba(226,232,240,0.35)' }}>
-      <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
-      <span className="text-[10px] text-slate-400 font-medium">Built by</span>
-      <span className="text-[10px] font-bold font-display bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, #4f46e5, #0ea5e9, #8b5cf6)' }}>Jayakrushna & Keerthi</span>
-      <Heart className="w-2.5 h-2.5 text-rose-500 fill-rose-500" />
+    <footer className="py-4 px-4 sm:px-6 flex items-center justify-center" style={{ background: 'rgba(248,250,252,0.92)', borderTop: '1px solid rgba(226,232,240,0.6)' }}>
+      <div
+        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[12px] font-medium"
+        style={{
+          background: 'rgba(255, 255, 255, 0.9)',
+          border: '1px solid rgba(129, 140, 248, 0.3)',
+          boxShadow: '0 2px 8px rgba(79, 70, 229, 0.05)',
+        }}
+      >
+        <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+        <span className="text-slate-500">Engineered by</span>
+        <strong
+          className="font-black text-[13px]"
+          style={{
+            background: 'linear-gradient(135deg, #1E1B4B 0%, #4338CA 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          Jaya Krushna
+        </strong>
+        <span className="text-indigo-400 font-bold">&</span>
+        <strong
+          className="font-black text-[13px]"
+          style={{
+            background: 'linear-gradient(135deg, #701A75 0%, #BE185D 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          Keerthi
+        </strong>
+        <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 animate-pulse ml-0.5" />
+      </div>
     </footer>
     </div>
   );
