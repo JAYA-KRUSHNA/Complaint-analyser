@@ -96,6 +96,7 @@ python -c "from app.services.ml.classifier_pipeline import train_and_save; train
 | Role | Email | Password |
 |------|-------|----------|
 | Admin | admin@civisense.ai | admin123 |
+| Officer | officer@civisense.ai | officer123 |
 
 ## 📡 API Endpoints
 
