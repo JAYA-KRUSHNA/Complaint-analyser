@@ -170,12 +170,25 @@ async def seed_database():
         session.add(admin)
         print("  ✅ Created super admin user (admin@civisense.ai / admin123)")
 
+        # ── Department Officer User ────────────────────────
+        officer = User(
+            id=uuid.uuid4(),
+            name="Municipal Officer",
+            email="officer@civisense.ai",
+            password_hash=pwd_context.hash("officer123"),  # Change in production!
+            role=UserRole.DEPARTMENT_OFFICER.value,
+            department_id=dept_map["Public Works"].id,
+            is_active=True,
+        )
+        session.add(officer)
+        print("  ✅ Created officer user (officer@civisense.ai / officer123)")
+
         # ── Commit ─────────────────────────────────────────
         await session.commit()
         print("\n🎉 Database seeded successfully!")
         print("\n📋 Default credentials:")
-        print("   Email: admin@civisense.ai")
-        print("   Password: admin123")
+        print("   Admin:   admin@civisense.ai / admin123")
+        print("   Officer: officer@civisense.ai / officer123")
         print("   ⚠️  Change these in production!")
 
 

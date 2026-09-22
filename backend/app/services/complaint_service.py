@@ -286,7 +286,7 @@ class ComplaintService:
     async def delete_complaint(
         self, complaint_id: uuid.UUID, user_id: uuid.UUID
     ) -> None:
-        """Soft delete — citizens can only delete SUBMITTED complaints."""
+        """Delete a complaint (hard delete). Citizens can only delete SUBMITTED complaints."""
         complaint = await self.get_complaint(complaint_id)
 
         if complaint.user_id != user_id:
@@ -302,12 +302,20 @@ class ComplaintService:
     # ─── Helpers ───────────────────────────────────────────
 
     async def _generate_complaint_number(self) -> str:
-        """Generate unique complaint number: CMP-XXXXX."""
+        """Generate unique complaint number: CMP-XXXXX.
+
+        Uses MAX(complaint_number) instead of COUNT(*) to avoid
+        race conditions when two complaints are submitted simultaneously.
+        """
         result = await self.db.execute(
-            select(func.count()).select_from(Complaint)
+            select(func.max(Complaint.complaint_number))
         )
-        count = (result.scalar() or 0) + 1
-        return f"CMP-{count:05d}"
+        last = result.scalar()  # e.g., "CMP-00041" or None
+        if last:
+            num = int(last.split("-")[1]) + 1
+        else:
+            num = 1
+        return f"CMP-{num:05d}"
 
     async def _get_category_by_name(self, name: str) -> Optional[Category]:
         """Look up category by name."""
