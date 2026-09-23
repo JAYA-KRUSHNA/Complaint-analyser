@@ -4,7 +4,7 @@ import { useToast } from '../contexts/ToastContext';
 import { authApi } from '../lib/api';
 import {
   User, Mail, Phone, Lock, Save, Shield, Calendar,
-  Eye, EyeOff, CheckCircle2, Globe, Heart, Sparkles,
+  Eye, EyeOff, CheckCircle2, Globe,
 } from 'lucide-react';
 
 const ROLE_LABELS: Record<string, string> = {

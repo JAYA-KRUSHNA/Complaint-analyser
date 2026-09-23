@@ -3,10 +3,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { adminApi } from '../lib/api';
 import {
-  Users, Search, Shield, ShieldCheck, UserCog, User, UserX, UserPlus,
-  ChevronDown, MoreVertical, Check, X, Trash2, ArrowUpDown,
-  AlertTriangle, Mail, Phone, Calendar, Eye, EyeOff, ChevronLeft,
-  ChevronRight, Filter, Heart, Sparkles,
+  Users, Search, Shield, ShieldCheck, UserCog, User,
+  MoreVertical, Check, X, Trash2, ArrowUpDown,
+  Mail, Phone, Calendar, Eye, EyeOff, ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 interface UserData {

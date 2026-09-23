@@ -143,7 +143,7 @@ export default function RegisterPage() {
     setVerifyStep('sending');
 
     try {
-      const res = await otpApi.sendEmailOTP(form.email);
+      await otpApi.sendEmailOTP(form.email);
       setVerifyStep('sent');
       setCountdown(60);
     } catch (err: any) {
