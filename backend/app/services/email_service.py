@@ -206,10 +206,17 @@ class EmailService:
         msg.attach(MIMEText(html_content, "html"))
 
         try:
-            with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
-                server.starttls()
-                server.login(settings.SMTP_USER, settings.SMTP_PASS)
-                server.sendmail(settings.SMTP_USER, to_email, msg.as_string())
+            if settings.SMTP_PORT == 465:
+                # SSL connection (works on Render free tier)
+                with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+                    server.login(settings.SMTP_USER, settings.SMTP_PASS)
+                    server.sendmail(settings.SMTP_USER, to_email, msg.as_string())
+            else:
+                # STARTTLS connection (port 587 — may not work on some hosts)
+                with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=15) as server:
+                    server.starttls()
+                    server.login(settings.SMTP_USER, settings.SMTP_PASS)
+                    server.sendmail(settings.SMTP_USER, to_email, msg.as_string())
         except Exception as e:
             # Fallback: log OTP to console so dev is never blocked
             print(f"[SMTP FAILED] To: {to_email} | Code: {otp} | Error: {e}")
