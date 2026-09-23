@@ -18,6 +18,7 @@ from app.models.priority_explanation import PriorityExplanation  # type: ignore
 from app.models.complaint_status_history import ComplaintStatusHistory  # type: ignore
 from app.models.prediction_audit import PredictionAudit  # type: ignore
 from app.models.priority_config import PriorityConfig  # type: ignore
+from app.models.email_otp import EmailOTP  # type: ignore
 
 __all__ = [
     "User",
@@ -32,4 +33,5 @@ __all__ = [
     "ComplaintStatusHistory",
     "PredictionAudit",
     "PriorityConfig",
+    "EmailOTP",
 ]

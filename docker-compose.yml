@@ -2,28 +2,7 @@ version: "3.9"
 
 services:
   # ─────────────────────────────────────────────
-  # PostgreSQL 15 — Primary Database
-  # ─────────────────────────────────────────────
-  db:
-    image: postgres:15-alpine
-    container_name: civisense_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: civisense
-      POSTGRES_PASSWORD: civisense_dev_2024
-      POSTGRES_DB: civisense_db
-    ports:
-      - "5433:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U civisense -d civisense_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  # ─────────────────────────────────────────────
-  # FastAPI Backend
+  # FastAPI Backend (Database: Supabase Cloud)
   # ─────────────────────────────────────────────
   backend:
     build:
@@ -31,10 +10,9 @@ services:
       dockerfile: Dockerfile
     container_name: civisense_backend
     restart: unless-stopped
+    env_file:
+      - ./backend/.env
     environment:
-      - DATABASE_URL=postgresql+asyncpg://civisense:civisense_dev_2024@db:5432/civisense_db
-      - DATABASE_URL_SYNC=postgresql://civisense:civisense_dev_2024@db:5432/civisense_db
-      - SECRET_KEY=dev-secret-key-change-in-production-minimum-32-chars
       - ENVIRONMENT=development
       - DEBUG=true
       - CORS_ORIGINS=http://localhost:5173,http://localhost:3000
@@ -45,13 +23,8 @@ services:
     volumes:
       - ./backend:/app
       - uploads:/app/uploads
-    depends_on:
-      db:
-        condition: service_healthy
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
-  pgdata:
-    driver: local
   uploads:
     driver: local

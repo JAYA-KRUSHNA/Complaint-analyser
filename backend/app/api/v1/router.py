@@ -13,6 +13,7 @@ from app.api.v1.analysis import router as analysis_router  # type: ignore
 from app.api.v1.dashboard import router as dashboard_router  # type: ignore
 from app.api.v1.ml_routes import router as ml_router  # type: ignore
 from app.api.v1.analytics import router as analytics_router  # type: ignore
+from app.api.v1.admin import router as admin_router  # type: ignore
 
 v1_router = APIRouter(prefix="/api/v1")
 
@@ -23,3 +24,4 @@ v1_router.include_router(analysis_router)
 v1_router.include_router(dashboard_router)
 v1_router.include_router(ml_router)
 v1_router.include_router(analytics_router)
+v1_router.include_router(admin_router)

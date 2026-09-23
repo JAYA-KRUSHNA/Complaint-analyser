@@ -41,7 +41,7 @@ export const authApi = {
 
   getMe: () => api.get('/auth/me'),
 
-  updateProfile: (data: { name?: string; phone?: string }) =>
+  updateProfile: (data: { name?: string; phone?: string; preferred_language?: string }) =>
     api.put('/auth/me', data),
 
   changePassword: (data: { current_password: string; new_password: string }) =>
@@ -141,6 +141,34 @@ export const researchApi = {
     api.post('/ml/set-active-model', data),
 };
 
+// ─── Admin User Management API ───────────────────────────────
+export const adminApi = {
+  listUsers: (params?: {
+    role?: string;
+    search?: string;
+    is_active?: boolean;
+    page?: number;
+    page_size?: number;
+  }) => api.get('/admin/users', { params }),
+
+  getUser: (userId: string) => api.get(`/admin/users/${userId}`),
+
+  changeRole: (userId: string, role: string) =>
+    api.put(`/admin/users/${userId}/role`, { role }),
+
+  changeStatus: (userId: string, is_active: boolean) =>
+    api.put(`/admin/users/${userId}/status`, { is_active }),
+
+  deleteUser: (userId: string) => api.delete(`/admin/users/${userId}`),
+};
+
+// ─── OTP Verification API ────────────────────────────────────
+export const otpApi = {
+  sendEmailOTP: (email: string) =>
+    api.post('/auth/otp/send-email', { email }),
+
+  verifyEmailOTP: (email: string, code: string) =>
+    api.post('/auth/otp/verify-email', { email, code }),
+};
+
 export default api;
-
-

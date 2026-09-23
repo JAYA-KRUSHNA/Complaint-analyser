@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────
-#  CiviSense AI — Fully Automated One-Command Startup
+#  CiviSense AI — One-Command Startup (Supabase Cloud DB)
 #
 #  Usage:  ./start.sh
 #  Stop:   Ctrl+C  (gracefully kills backend & frontend)
 #
-#  This script auto-handles EVERYTHING:
+#  This script auto-handles:
 #    ✔ Python venv creation & dependency install
 #    ✔ Node.js dependency install
-#    ✔ Docker PostgreSQL startup
-#    ✔ Database migrations & seeding
+#    ✔ Database migrations (Supabase Cloud)
+#    ✔ Database seeding
 #    ✔ Backend (FastAPI) & Frontend (Vite) launch
 # ─────────────────────────────────────────────────────────
 set -e
@@ -48,50 +48,50 @@ trap cleanup SIGINT SIGTERM
 echo -e "${CYAN}"
 echo "   ╔═══════════════════════════════════════════╗"
 echo "   ║                                           ║"
-echo "   ║     🏛️  CiviSense AI — Auto Launcher      ║"
+echo "   ║    ◆ CiviSense AI                        ║"
+echo "   ║      Public Grievance System              ║"
+echo "   ║      Powered by Supabase Cloud            ║"
 echo "   ║                                           ║"
 echo "   ╚═══════════════════════════════════════════╝"
 echo -e "${NC}"
 
 # ═══════════════════════════════════════════════════════════
-# STEP 1: Check base prerequisites (python3, node, docker)
+# STEP 1: Check prerequisites (python3, node)
 # ═══════════════════════════════════════════════════════════
-step "Step 1/7 — Checking system prerequisites"
+step "Step 1/6 — Checking prerequisites"
 
 # Python
 if ! command -v python3 &>/dev/null; then
-    fail "Python 3 is not installed. Please install Python 3.11+ from https://python.org"
+    fail "Python 3 is not installed."
     exit 1
 fi
-PYVER=$(python3 --version 2>&1)
-ok "Python: $PYVER"
+ok "Python: $(python3 --version 2>&1)"
 
 # Node.js
 if ! command -v node &>/dev/null; then
-    fail "Node.js is not installed. Please install Node.js 18+ from https://nodejs.org"
+    fail "Node.js is not installed."
     exit 1
 fi
-NODEVER=$(node --version 2>&1)
-ok "Node.js: $NODEVER"
+ok "Node: $(node --version 2>&1)"
 
 # npm
 if ! command -v npm &>/dev/null; then
-    fail "npm is not installed. It should come with Node.js."
+    fail "npm is not installed."
     exit 1
 fi
 ok "npm: $(npm --version 2>&1)"
 
-# Docker
-if ! command -v docker &>/dev/null; then
-    fail "Docker is not installed. Please install Docker Desktop from https://docker.com"
+# Check .env exists
+if [ ! -f "$ROOT_DIR/backend/.env" ]; then
+    fail "backend/.env not found. Please create it with your Supabase credentials."
     exit 1
 fi
-ok "Docker installed"
+ok "backend/.env found (Supabase config)"
 
 # ═══════════════════════════════════════════════════════════
 # STEP 2: Python virtual environment & dependencies
 # ═══════════════════════════════════════════════════════════
-step "Step 2/7 — Setting up Python environment"
+step "Step 2/6 — Setting up Python environment"
 
 if [ ! -d "$ROOT_DIR/venv" ]; then
     log "Creating Python virtual environment..."
@@ -114,7 +114,7 @@ fi
 # ═══════════════════════════════════════════════════════════
 # STEP 3: Frontend dependencies
 # ═══════════════════════════════════════════════════════════
-step "Step 3/7 — Setting up frontend dependencies"
+step "Step 3/6 — Setting up frontend dependencies"
 
 if [ ! -d "$ROOT_DIR/frontend/node_modules" ]; then
     log "Installing npm dependencies (this may take a minute)..."
@@ -126,75 +126,27 @@ else
 fi
 
 # ═══════════════════════════════════════════════════════════
-# STEP 4: Start PostgreSQL via Docker
+# STEP 4: Database migrations (Supabase Cloud)
 # ═══════════════════════════════════════════════════════════
-step "Step 4/7 — Starting PostgreSQL database"
-
-# Start Docker daemon if not running
-if ! docker info &>/dev/null; then
-    warn "Docker daemon not running — starting Docker Desktop..."
-    open -a Docker
-    printf "  Waiting for Docker"
-    for i in $(seq 1 60); do
-        if docker info &>/dev/null; then
-            echo ""
-            ok "Docker daemon started"
-            break
-        fi
-        printf "."
-        sleep 2
-        if [ "$i" -eq 60 ]; then
-            echo ""
-            fail "Docker failed to start within 2 minutes"
-            exit 1
-        fi
-    done
-else
-    ok "Docker daemon running"
-fi
-
-# Start the database container
-docker-compose -f "$ROOT_DIR/docker-compose.yml" up -d db 2>&1 | grep -v "obsolete" || true
-
-# Wait for DB readiness
-printf "  Waiting for database"
-for i in $(seq 1 30); do
-    if docker exec civisense_db pg_isready -U civisense -d civisense_db &>/dev/null; then
-        echo ""
-        ok "PostgreSQL ready on port 5433"
-        break
-    fi
-    printf "."
-    sleep 1
-    if [ "$i" -eq 30 ]; then
-        echo ""
-        fail "Database failed to start within 30s"
-        exit 1
-    fi
-done
-
-# ═══════════════════════════════════════════════════════════
-# STEP 5: Database migrations
-# ═══════════════════════════════════════════════════════════
-step "Step 5/7 — Running database migrations"
+step "Step 4/6 — Running database migrations (Supabase)"
 
 cd "$ROOT_DIR/backend"
 "$ROOT_DIR/venv/bin/python" -m alembic upgrade head 2>&1 | tail -1
 ok "Migrations up to date"
 
 # ═══════════════════════════════════════════════════════════
-# STEP 6: Seed database (if not already seeded)
+# STEP 5: Seed database (if not already seeded)
 # ═══════════════════════════════════════════════════════════
-step "Step 6/7 — Seeding database"
+step "Step 5/6 — Seeding database"
 
 cd "$ROOT_DIR/backend"
 "$ROOT_DIR/venv/bin/python" -m seed.seed_data 2>&1
 ok "Database seed check complete"
 
 # ═══════════════════════════════════════════════════════════
-# STEP 7: Launch backend & frontend
+# STEP 6: Launch backend & frontend
 # ═══════════════════════════════════════════════════════════
-step "Step 7/7 — Launching application"
+step "Step 6/6 — Launching application"
 
 # Start Backend
 log "Starting FastAPI backend..."
@@ -235,11 +187,12 @@ echo ""
 echo -e "  ${BOLD}Frontend${NC}     →  ${CYAN}http://localhost:5173${NC}"
 echo -e "  ${BOLD}Backend${NC}      →  ${CYAN}http://localhost:8000${NC}"
 echo -e "  ${BOLD}API Docs${NC}     →  ${CYAN}http://localhost:8000/docs${NC}"
-echo -e "  ${BOLD}Database${NC}     →  localhost:5433"
+echo -e "  ${BOLD}Database${NC}     →  Supabase Cloud (PostgreSQL)"
 echo ""
-echo -e "  ${BOLD}Demo Login:${NC}"
-echo -e "    Admin   →  ${DIM}admin@civisense.ai${NC}   / ${DIM}admin123${NC}"
-echo -e "    Officer →  ${DIM}officer@civisense.ai${NC} / ${DIM}officer123${NC}"
+echo -e "  ${BOLD}Admin Login:${NC}"
+echo -e "    Admin   →  ${DIM}jayakrushna1622@gmail.com${NC} / ${DIM}jk@123${NC}"
+echo -e "    Admin2  →  ${DIM}admin@civisense.ai${NC}       / ${DIM}admin123${NC}"
+echo -e "    Officer →  ${DIM}officer@civisense.ai${NC}     / ${DIM}officer123${NC}"
 echo ""
 echo -e "  Press ${BOLD}Ctrl+C${NC} to stop all services"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"

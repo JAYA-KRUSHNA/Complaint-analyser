@@ -14,6 +14,8 @@ import PriorityQueuePage from './pages/PriorityQueuePage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import MapPage from './pages/MapPage';
 import ResearchPage from './pages/ResearchPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -53,8 +55,10 @@ function AppRoutes() {
         <Route path="/complaints/new" element={<NewComplaintPage />} />
         <Route path="/complaints/:id" element={<ComplaintDetailPage />} />
         <Route path="/admin/queue" element={<PriorityQueuePage />} />
+        <Route path="/admin/users" element={<AdminUsersPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/research" element={<ResearchPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Route>
 
       {/* Fallback */}

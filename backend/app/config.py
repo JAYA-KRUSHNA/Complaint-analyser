@@ -34,12 +34,12 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
 
-    # ─── Database ──────────────────────────────────────────────
+    # ─── Database (Supabase Cloud PostgreSQL) ────────────────────
     DATABASE_URL: str = (
-        "postgresql+asyncpg://civisense:civisense_dev_2024@localhost:5433/civisense_db"
+        "postgresql+asyncpg://postgres:ammananna16222607@db.pigkhcziyqlnnfqktbyg.supabase.co:5432/postgres"
     )
     DATABASE_URL_SYNC: str = (
-        "postgresql://civisense:civisense_dev_2024@localhost:5433/civisense_db"
+        "postgresql://postgres:ammananna16222607@db.pigkhcziyqlnnfqktbyg.supabase.co:5432/postgres"
     )
     DB_ECHO: bool = False  # Set True to log all SQL queries
 
@@ -102,6 +102,14 @@ class Settings(BaseSettings):
     # ─── Rate Limiting ─────────────────────────────────────────
     RATE_LIMIT_PER_MINUTE: int = 100
     LOGIN_RATE_LIMIT_PER_MINUTE: int = 5
+
+    # ─── Email OTP (SMTP) ─────────────────────────────────────
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASS: str = ""
+    OTP_EXPIRY_MINUTES: int = 5
+    OTP_MAX_ATTEMPTS: int = 3
 
     # ─── ML Configuration ──────────────────────────────────────
     CLASSIFIER_BACKEND: str = "rule_based"  # "rule_based" or "ml"

@@ -172,3 +172,79 @@ async def admin_create_user(
     service = AuthService(db)
     user = await service.create_user(data)
     return user
+
+
+# ─── Email OTP Verification ──────────────────────────────────
+
+from app.schemas.otp import (  # type: ignore
+    SendEmailOTPRequest,
+    VerifyEmailOTPRequest,
+    OTPResponse,
+    OTPVerifyResponse,
+)
+from app.services.email_service import EmailService  # type: ignore
+
+
+@router.post(
+    "/otp/send-email",
+    response_model=OTPResponse,
+    summary="Send OTP to email address",
+)
+async def send_email_otp(
+    data: SendEmailOTPRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Send a 6-digit OTP to the specified email address.
+
+    Rate limited: 60-second cooldown between requests per email.
+    OTP expires after 5 minutes.
+    """
+    service = EmailService(db)
+    try:
+        expires_in = await service.send_otp(data.email)
+        return OTPResponse(
+            message="Verification code sent to your email",
+            expires_in_seconds=expires_in,
+        )
+    except ValueError as e:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            status_code=429,
+            content={"detail": str(e)},
+        )
+    except RuntimeError as e:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            status_code=500,
+            content={"detail": str(e)},
+        )
+
+
+@router.post(
+    "/otp/verify-email",
+    response_model=OTPVerifyResponse,
+    summary="Verify email OTP code",
+)
+async def verify_email_otp(
+    data: VerifyEmailOTPRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Verify the 6-digit OTP code sent to the email.
+
+    Max 3 attempts per OTP. After that, a new OTP must be requested.
+    """
+    service = EmailService(db)
+    try:
+        await service.verify_otp(data.email, data.code)
+        return OTPVerifyResponse(
+            verified=True,
+            message="Email verified successfully",
+        )
+    except ValueError as e:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            status_code=400,
+            content={"detail": str(e), "verified": False},
+        )

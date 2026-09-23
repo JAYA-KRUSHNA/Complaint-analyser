@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, FileText, Plus, LogOut, Menu, X,
   Shield, ChevronDown, BarChart3, ListChecks, ChevronLeft,
-  Bell, Search, MapPin, Cpu, ArrowRight, Heart, Sparkles,
+  Bell, Search, MapPin, Cpu, ArrowRight, Heart, Sparkles, Users, User,
 } from 'lucide-react';
 
 // ─── Command Palette ───────────────────────────────────────────
@@ -19,6 +19,7 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
     { label: 'New Complaint', path: '/complaints/new', icon: Plus, section: 'Navigation' },
     { label: 'Civic Map', path: '/map', icon: MapPin, section: 'Navigation' },
     { label: 'Priority Queue', path: '/admin/queue', icon: ListChecks, section: 'Admin' },
+    { label: 'User Management', path: '/admin/users', icon: Users, section: 'Admin' },
     { label: 'Analytics', path: '/analytics', icon: BarChart3, section: 'Admin' },
     { label: 'AI Research Lab', path: '/research', icon: Cpu, section: 'Admin' },
   ];
@@ -128,6 +129,7 @@ export default function DashboardLayout() {
       label: 'Administration',
       items: [
         { path: '/admin/queue', label: 'Priority Queue', icon: ListChecks },
+        ...(isAdmin ? [{ path: '/admin/users', label: 'User Management', icon: Users }] : []),
         { path: '/analytics', label: 'Analytics', icon: BarChart3 },
         { path: '/research', label: 'AI Research Lab', icon: Cpu },
       ],
@@ -332,6 +334,13 @@ export default function DashboardLayout() {
                       <p className="text-sm font-bold text-civic-800 font-display">{user?.name}</p>
                       <p className="text-xs text-civic-400 mt-0.5">{user?.email}</p>
                     </div>
+                    <button
+                      onClick={() => { navigate('/profile'); setProfileOpen(false); }}
+                      className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-civic-700 hover:bg-indigo-50/80 transition-colors font-medium"
+                    >
+                      <User className="w-4 h-4" /> My Profile
+                    </button>
+                    <div className="border-t border-civic-100" />
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50/80 transition-colors font-medium"

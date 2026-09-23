@@ -61,11 +61,21 @@ def run_migrations_online() -> None:
     Run migrations in 'online' mode.
 
     Connects to the database and applies migrations directly.
+    Supports SSL for cloud databases (Supabase, Neon, etc.).
     """
+    section = config.get_section(config.config_ini_section, {})
+
+    # Enable SSL for cloud database connections
+    connect_args = {}
+    db_url = section.get("sqlalchemy.url", "")
+    if any(cloud in db_url for cloud in ["supabase.com", "neon.tech", "render.com", "railway.app", "amazonaws.com"]):
+        connect_args["sslmode"] = "require"
+
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        section,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
+        connect_args=connect_args,
     )
 
     with connectable.connect() as connection:

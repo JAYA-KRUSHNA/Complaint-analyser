@@ -16,13 +16,18 @@ from sqlalchemy.orm import DeclarativeBase  # type: ignore
 
 from app.config import settings  # type: ignore
 
+import ssl as _ssl
 
 # ─── Async Engine ──────────────────────────────────────────────
-# Connection pooling configured for both local dev and Neon serverless free tier.
-# Neon free tier limits: 20 connections. We keep pool small and resilient to auto-suspend.
+# Connection pooling configured for both local dev and cloud PostgreSQL (Supabase/Neon).
+# Cloud free tiers limit connections (~20). We keep pool small and resilient.
 connect_args = {}
 if settings.is_cloud_db:
-    connect_args["ssl"] = True
+    # asyncpg requires an explicit SSLContext for cloud databases
+    _ssl_ctx = _ssl.create_default_context()
+    _ssl_ctx.check_hostname = False
+    _ssl_ctx.verify_mode = _ssl.CERT_NONE
+    connect_args["ssl"] = _ssl_ctx
 
 engine = create_async_engine(
     settings.async_database_url,
