@@ -100,6 +100,15 @@ export default function RegisterPage() {
         phoneNumber = `+91${phoneNumber}`;
       }
 
+      // Guard: if Firebase not configured, fall back to email
+      if (!auth) {
+        setSmsQuotaExceeded(true);
+        setVerifyMethod('email');
+        setOtpError('Phone verification unavailable. Use email instead.');
+        setVerifyStep('idle');
+        return;
+      }
+
       // Create invisible reCAPTCHA
       if (!recaptchaVerifierRef.current && recaptchaRef.current) {
         recaptchaVerifierRef.current = new RecaptchaVerifier(auth, recaptchaRef.current, {
