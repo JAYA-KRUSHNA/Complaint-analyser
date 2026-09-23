@@ -207,17 +207,17 @@ class EmailService:
 
         try:
             if settings.SMTP_PORT == 465:
-                # SSL connection (works on Render free tier)
-                with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+                with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
                     server.login(settings.SMTP_USER, settings.SMTP_PASS)
                     server.sendmail(settings.SMTP_USER, to_email, msg.as_string())
             else:
-                # STARTTLS connection (port 587 — may not work on some hosts)
-                with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=15) as server:
+                with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
                     server.starttls()
                     server.login(settings.SMTP_USER, settings.SMTP_PASS)
                     server.sendmail(settings.SMTP_USER, to_email, msg.as_string())
+            print(f"[EMAIL SENT] To: {to_email}")
         except Exception as e:
-            # Fallback: log OTP to console so dev is never blocked
-            print(f"[SMTP FAILED] To: {to_email} | Code: {otp} | Error: {e}")
-            raise RuntimeError(f"Failed to send verification email: {str(e)}")
+            # SMTP blocked (e.g. Render free tier) — log OTP so registration isn't blocked
+            # OTP visible in Render Logs tab for manual verification during demo
+            print(f"[SMTP BLOCKED] To: {to_email} | OTP: {otp} | Error: {e}")
+            # Don't raise — allow registration to continue without email
