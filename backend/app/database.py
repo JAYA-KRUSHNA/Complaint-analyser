@@ -29,6 +29,12 @@ if settings.is_cloud_db:
     _ssl_ctx.verify_mode = _ssl.CERT_NONE
     connect_args["ssl"] = _ssl_ctx
 
+# Disable prepared statement cache for Supabase pgbouncer (transaction mode)
+# Without this, asyncpg throws "prepared statement already exists" errors
+if "pooler.supabase.com" in settings.async_database_url:
+    connect_args["statement_cache_size"] = 0
+    connect_args["prepared_statement_cache_size"] = 0
+
 engine = create_async_engine(
     settings.async_database_url,
     echo=settings.DB_ECHO,
